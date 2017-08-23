@@ -101,9 +101,12 @@ def main(_):
 
     # load comparison images
     full_batch = (1000, batch_shape[1], batch_shape[2], batch_shape[3])
-    for filenames, images in load_images(devset_dir, full_batch):
-      comparison = images
-      break
+    paths = tf.gfile.Glob(os.path.join(devset_dir, '*.png'))
+    comparison = np.zeros(full_batch)
+    for idx, filepath in enumerate(paths):
+      image = imread(filepath, mode='RGB').astype(np.float) / 255.0
+      # Images for inception classifier are normalized to be in [-1, 1] interval.
+      comparison[idx, :, :, :] = image * 2.0 - 1.0
 
     def comparison_swap(images):
       swapped = np.zeros_like(images)
