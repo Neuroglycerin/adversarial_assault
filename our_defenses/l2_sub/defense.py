@@ -61,8 +61,9 @@ def load_images(input_dir, batch_shape):
   idx = 0
   batch_size = batch_shape[0]
   for filepath in tf.gfile.Glob(os.path.join(input_dir, '*.png')):
-    with tf.gfile.Open(filepath) as f:
-      image = imread(f, mode='RGB').astype(np.float) / 255.0
+    #with tf.gfile.Open(filepath) as f:
+    #  image = imread(f, mode='RGB').astype(np.float) / 255.0
+    image = imread(filepath, mode='RGB').astype(np.float) / 255.0
     # Images for inception classifier are normalized to be in [-1, 1] interval.
     images[idx, :, :, :] = image * 2.0 - 1.0
     filenames.append(os.path.basename(filepath))
@@ -120,7 +121,7 @@ def main(_):
       return swapped
 
     with tf.train.MonitoredSession(session_creator=session_creator) as sess:
-      with tf.gfile.Open(FLAGS.output_file, 'w') as out_file:
+      with open(FLAGS.output_file, 'w') as out_file:
         for filenames, images in load_images(FLAGS.input_dir, batch_shape):
           images = comparison_swap(images)
           labels = sess.run(predicted_labels, feed_dict={x_input: images})
