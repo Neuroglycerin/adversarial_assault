@@ -1,3 +1,30 @@
+# Adversarial Assault
+
+After cloning the repo, you should run the competition script to download the resources.
+
+```bash
+./download_data.sh
+```
+
+You will have to manually copy checkpoint files from `sample_*` into into `our_*` submissions.
+
+## How to verify code works and see samples
+
+Example attack:
+```
+cd sample_targeted_attacks/step_target_class
+mkdir -p output
+rm -f output/*.png
+./run_attack.sh ../../dataset/images/ ./output 10
+```
+
+Example defence:
+```
+cd sample_defenses/base_inception_model
+./run_defense.sh ../../dataset/images/ output.csv
+```
+
+---
 
 # Development toolkit for participants of adversarial competition
 
