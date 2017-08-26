@@ -3,9 +3,9 @@
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 # Download checkpoints for sample attacks and defenses.
-sample_attacks/download_checkpoints.sh
-sample_targeted_attacks/download_checkpoints.sh
-sample_defenses/download_checkpoints.sh
+attacks/download_checkpoints.sh
+targeted_attacks/download_checkpoints.sh
+defenses/download_checkpoints.sh
 
 # Download dataset.
 mkdir dataset/images

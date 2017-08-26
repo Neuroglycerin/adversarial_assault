@@ -6,9 +6,9 @@ set -e
 # directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-ATTACKS_DIR="${SCRIPT_DIR}/sample_attacks"
-TARGETED_ATTACKS_DIR="${SCRIPT_DIR}/sample_targeted_attacks"
-DEFENSES_DIR="${SCRIPT_DIR}/sample_defenses"
+ATTACKS_DIR="${SCRIPT_DIR}/attacks"
+TARGETED_ATTACKS_DIR="${SCRIPT_DIR}/targeted_attacks"
+DEFENSES_DIR="${SCRIPT_DIR}/defenses"
 DATASET_DIR="${SCRIPT_DIR}/dataset/images"
 DATASET_METADATA_FILE="${SCRIPT_DIR}/dataset/dev_dataset.csv"
 MAX_EPSILON=16
