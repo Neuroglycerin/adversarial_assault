@@ -113,7 +113,7 @@ class Attack(Submission):
     expected_hash = '{}_{}'.format(
       dirhash(self.directory, 'sha1'),
       hashlib.sha1(input_dir).hexdigest(),
-      hashlib.sha1(epsilon).hexdigest(),
+      hashlib.sha1(str(epsilon)).hexdigest(),
     )
     filepath = os.path.join(hash_folder, fname)
     if not os.path.isfile(filepath):
