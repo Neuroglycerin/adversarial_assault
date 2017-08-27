@@ -122,6 +122,7 @@ class Attack(Submission):
       with open(filepath, 'r') as f:
         last_hash = f.read()
       if last_hash == expected_hash:
+        print('Using cached output for ' + self.directory)
         return
       else:
         os.remove(filepath)
