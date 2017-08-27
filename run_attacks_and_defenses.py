@@ -110,10 +110,10 @@ class Attack(Submission):
     # We encode the current request with the hash of the submission, and
     # the input data (which consists of the input directory and eps)
     # We assume that the input directory's contents are static.
-    expected_hash = '{}_{}'.format(
+    expected_hash = '{}_{}_{}'.format(
       dirhash(self.directory, 'sha1'),
       hashlib.sha1(input_dir).hexdigest(),
-      hashlib.sha1(str(epsilon)).hexdigest(),
+      epsilon,
     )
     filepath = os.path.join(hash_folder, fname)
     if not os.path.isfile(filepath):
