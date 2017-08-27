@@ -34,6 +34,14 @@ cp -R "${DEFENSES_DIR}"/* "${WORKING_DIR}/defenses"
 cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
 cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
+if hash nvidia-docker 2>/dev/null; then
+  echo "Detected GPU is available."
+  GPU_FLAG="--gpu"
+else
+  echo "No GPU detected. Will run on CPU."
+  GPU_FLAG="--nogpu"
+fi
+
 echo "Running attacks and defenses"
 python "${SCRIPT_DIR}/run_attacks_and_defenses.py" \
   --attacks_dir="${WORKING_DIR}/attacks" \
@@ -44,6 +52,7 @@ python "${SCRIPT_DIR}/run_attacks_and_defenses.py" \
   --dataset_metadata="${WORKING_DIR}/dataset.csv" \
   --output_dir="${WORKING_DIR}/output_dir" \
   --epsilon="${MAX_EPSILON}" \
-  --save_all_classification
+  --save_all_classification \
+  ${GPU_FLAG}
 
 echo "Output is saved in directory '${WORKING_DIR}/output_dir'"
