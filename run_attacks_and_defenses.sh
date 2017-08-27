@@ -19,7 +19,9 @@ MAX_EPSILON=16
 if [[ "${OSTYPE}" == "darwin"* ]]; then
     WORKING_DIR="/private"$(mktemp -d)
 else
-    WORKING_DIR=$(mktemp -d)
+    #WORKING_DIR=$(mktemp -d)
+    WORKING_DIR="$(dirname "${SCRIPT_DIR}")"/working
+    mkdir "${WORKING_DIR}"
 fi
 echo "Preparing working directory: ${WORKING_DIR}"
 mkdir "${WORKING_DIR}/attacks"
