@@ -160,6 +160,36 @@ class Defense(Submission):
     print(' '.join(cmd))
     subprocess.call(cmd)
 
+  def maybe_run(self, hash_folder, input_dir, output_dir):
+    # Check whether we already computed results for this *exact* submission
+    # The file name encodes the submission's name and the target dir.
+    fname = '{}_{}'.format(
+      hashlib.sha1(self.directory).hexdigest(),
+      hashlib.sha1(output_dir).hexdigest(),
+    )
+    # We encode the current request with the hash of the submission, and
+    # the input data (the whole recursive folder of input images).
+    expected_hash = '{}_{}'.format(
+      dirhash(self.directory, 'sha1'),
+      dirhash(input_dir, 'sha1'),
+    )
+    filepath = os.path.join(hash_folder, fname)
+    if not os.path.isfile(filepath):
+      pass
+    else:
+      with open(filepath, 'r') as f:
+        last_hash = f.read()
+      if last_hash == expected_hash:
+        print('Using cached output for ' + self.directory)
+        return
+      else:
+        os.remove(filepath)
+    # We do need to run the code and generate these attacks
+    self.run(input_dir, output_dir)
+    # Remember that this is what we last output
+    with open(filepath, 'w') as f:
+      f.write(expected_hash)
+
 
 def read_submissions_from_directory(dirname, use_gpu):
   """Scans directory and read all submissions.
@@ -591,7 +621,7 @@ def main():
   # Run all defenses.
   defenses_output = {}
   for d in defenses:
-    d.run(all_adv_examples_dir, os.path.join(defenses_output_dir, d.name))
+    d.maybe_run(all_adv_examples_dir, os.path.join(defenses_output_dir, d.name))
     defenses_output[d.name] = load_defense_output(
         os.path.join(defenses_output_dir, d.name, 'result.csv'))
 
