@@ -21,15 +21,15 @@ if [[ "${OSTYPE}" == "darwin"* ]]; then
 else
     #WORKING_DIR=$(mktemp -d)
     WORKING_DIR="$(dirname "${SCRIPT_DIR}")"/working
-    mkdir "${WORKING_DIR}"
+    mkdir -p "${WORKING_DIR}"
 fi
 echo "Preparing working directory: ${WORKING_DIR}"
-mkdir "${WORKING_DIR}/attacks"
-mkdir "${WORKING_DIR}/targeted_attacks"
-mkdir "${WORKING_DIR}/defenses"
-mkdir "${WORKING_DIR}/dataset"
-mkdir "${WORKING_DIR}/intermediate_results"
-mkdir "${WORKING_DIR}/output_dir"
+mkdir -p "${WORKING_DIR}/attacks"
+mkdir -p "${WORKING_DIR}/targeted_attacks"
+mkdir -p "${WORKING_DIR}/defenses"
+mkdir -p "${WORKING_DIR}/dataset"
+mkdir -p "${WORKING_DIR}/intermediate_results"
+mkdir -p "${WORKING_DIR}/output_dir"
 cp -R "${ATTACKS_DIR}"/* "${WORKING_DIR}/attacks"
 cp -R "${TARGETED_ATTACKS_DIR}"/* "${WORKING_DIR}/targeted_attacks"
 cp -R "${DEFENSES_DIR}"/* "${WORKING_DIR}/defenses"

@@ -11,6 +11,7 @@ import os
 import subprocess
 import numpy as np
 from PIL import Image
+import errno
 
 
 def parse_args():
@@ -507,17 +508,26 @@ def main():
   print('Found tageted attacks: ', [a.name for a in targeted_attacks])
   print('Found defenses: ', [d.name for d in defenses])
 
+  def maybe_make_dir(dirname):
+    try:
+        os.mkdir(dirname)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(dirname):
+            pass
+        else:
+            raise
+
   # Prepare subdirectories for intermediate results.
-  os.mkdir(attacks_output_dir)
-  os.mkdir(targeted_attacks_output_dir)
-  os.mkdir(defenses_output_dir)
-  os.mkdir(all_adv_examples_dir)
+  maybe_make_dir(attacks_output_dir)
+  maybe_make_dir(targeted_attacks_output_dir)
+  maybe_make_dir(defenses_output_dir)
+  maybe_make_dir(all_adv_examples_dir)
   for a in attacks:
-    os.mkdir(os.path.join(attacks_output_dir, a.name))
+    maybe_make_dir(os.path.join(attacks_output_dir, a.name))
   for a in targeted_attacks:
-    os.mkdir(os.path.join(targeted_attacks_output_dir, a.name))
+    maybe_make_dir(os.path.join(targeted_attacks_output_dir, a.name))
   for d in defenses:
-    os.mkdir(os.path.join(defenses_output_dir, d.name))
+    maybe_make_dir(os.path.join(defenses_output_dir, d.name))
 
   # Run all non-targeted attacks.
   attacks_output = AttacksOutput(args.dataset_dir,
