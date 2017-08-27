@@ -553,6 +553,7 @@ def main():
             raise
 
   # Prepare subdirectories for intermediate results.
+  maybe_make_dir(hash_dir)
   maybe_make_dir(attacks_output_dir)
   maybe_make_dir(targeted_attacks_output_dir)
   maybe_make_dir(defenses_output_dir)
