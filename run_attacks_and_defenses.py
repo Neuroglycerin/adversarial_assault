@@ -11,6 +11,8 @@ import os
 import subprocess
 import numpy as np
 from PIL import Image
+import hashlib
+from checksumdir import dirhash
 import errno
 
 
@@ -97,6 +99,37 @@ class Attack(Submission):
            str(epsilon)]
     print(' '.join(cmd))
     subprocess.call(cmd)
+
+  def maybe_run(self, hash_folder, input_dir, output_dir, epsilon):
+    # Check whether we already computed images for this *exact* submission
+    # The file name encodes the submission's name and the target dir
+    fname = '{}_{}'.format(
+      hashlib.sha1(self.directory).hexdigest(),
+      hashlib.sha1(output_dir).hexdigest(),
+    )
+    # We encode the current request with the hash of the submission, and
+    # the input data (which consists of the input directory and eps)
+    # We assume that the input directory's contents are static.
+    expected_hash = '{}_{}'.format(
+      dirhash(self.directory, 'sha1'),
+      hashlib.sha1(input_dir).hexdigest(),
+      hashlib.sha1(epsilon).hexdigest(),
+    )
+    filepath = os.path.join(hash_folder, fname)
+    if not os.path.isfile(filepath):
+      pass
+    else:
+      with open(filepath, 'r') as f:
+        last_hash = f.read()
+      if last_hash == expected_hash:
+        return
+      else:
+        os.remove(filepath)
+    # We do need to run the code and generate these attacks
+    self.run(input_dir, output_dir, epsilon)
+    # Remember that this is what we last output
+    with open(filepath, 'w') as f:
+      f.write(expected_hash)
 
 
 class Defense(Submission):
@@ -476,6 +509,7 @@ def compute_and_save_scores_and_ranking(attacks_output,
 
 def main():
   args = parse_args()
+  hash_dir = os.path.join(args.intermediate_results_dir, 'hashes')
   attacks_output_dir = os.path.join(args.intermediate_results_dir,
                                     'attacks_output')
   targeted_attacks_output_dir = os.path.join(args.intermediate_results_dir,
@@ -536,7 +570,8 @@ def main():
                                  all_adv_examples_dir,
                                  args.epsilon)
   for a in attacks:
-    a.run(args.dataset_dir,
+    a.maybe_run(hash_dir,
+          args.dataset_dir,
           os.path.join(attacks_output_dir, a.name),
           args.epsilon)
     attacks_output.clip_and_copy_attack_outputs(a.name, False)
@@ -545,7 +580,8 @@ def main():
   dataset_meta.save_target_classes(os.path.join(args.dataset_dir,
                                                 'target_class.csv'))
   for a in targeted_attacks:
-    a.run(args.dataset_dir,
+    a.maybe_run(hash_dir,
+          args.dataset_dir,
           os.path.join(targeted_attacks_output_dir, a.name),
           args.epsilon)
     attacks_output.clip_and_copy_attack_outputs(a.name, True)
