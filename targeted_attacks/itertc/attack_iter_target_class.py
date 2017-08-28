@@ -8,8 +8,7 @@ import csv
 import os
 
 import numpy as np
-from scipy.misc import imread
-from scipy.misc import imsave
+from PIL import Image
 
 import tensorflow as tf
 from tensorflow.contrib.slim.nets import inception
@@ -74,7 +73,7 @@ def load_images(input_dir, batch_shape):
   batch_size = batch_shape[0]
   for filepath in tf.gfile.Glob(os.path.join(input_dir, '*.png')):
     with tf.gfile.Open(filepath) as f:
-      image = imread(f, mode='RGB').astype(np.float) / 255.0
+      image = np.array(Image.open(f).convert('RGB')).astype(np.float) / 255.0
     # Images for inception classifier are normalized to be in [-1, 1] interval.
     images[idx, :, :, :] = image * 2.0 - 1.0
     filenames.append(os.path.basename(filepath))
@@ -102,7 +101,8 @@ def save_images(images, filenames, output_dir):
     # Images for inception classifier are normalized to be in [-1, 1] interval,
     # so rescale them back to [0, 1].
     with tf.gfile.Open(os.path.join(output_dir, filename), 'w') as f:
-      imsave(f, (images[i, :, :, :] + 1.0) * 0.5, format='png')
+      img = (((images[i, :, :, :] + 1.0) * 0.5) * 255.0).astype(np.uint8)
+      Image.fromarray(img).save(f, format='PNG')
 
 
 class InceptionModel(object):
