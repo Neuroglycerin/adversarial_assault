@@ -1,6 +1,6 @@
 {
-  "type": "targeted_attack",
-  "container": "gcr.io/tensorflow/tensorflow:1.1.0",
-  "container_gpu": "gcr.io/tensorflow/tensorflow:1.1.0-gpu",
+  "type": "attack",
+  "container": "goodfellow/competition:cpu",
+  "container_gpu": "goodfellow/competition:gpu",
   "entry_point": "run_attack.sh"
 }
