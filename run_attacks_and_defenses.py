@@ -621,7 +621,9 @@ def main():
   # Run all defenses.
   defenses_output = {}
   for d in defenses:
-    d.maybe_run(all_adv_examples_dir, os.path.join(defenses_output_dir, d.name))
+    d.maybe_run(hash_dir,
+          all_adv_examples_dir,
+          os.path.join(defenses_output_dir, d.name))
     defenses_output[d.name] = load_defense_output(
         os.path.join(defenses_output_dir, d.name, 'result.csv'))
 
