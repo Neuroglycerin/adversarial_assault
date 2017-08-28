@@ -115,7 +115,7 @@ class Attack(Submission):
       hashlib.sha1(input_dir).hexdigest(),
       epsilon,
     )
-    filepath = os.path.join(hash_folder, fname)
+    filepath = os.path.join(hash_folder, 'attacks', fname)
     if not os.path.isfile(filepath):
       pass
     else:
@@ -173,7 +173,7 @@ class Defense(Submission):
       dirhash(self.directory, 'sha1'),
       dirhash(input_dir, 'sha1'),
     )
-    filepath = os.path.join(hash_folder, fname)
+    filepath = os.path.join(hash_folder, 'defenses', fname)
     if not os.path.isfile(filepath):
       pass
     else:
@@ -584,6 +584,8 @@ def main():
 
   # Prepare subdirectories for intermediate results.
   maybe_make_dir(hash_dir)
+  maybe_make_dir(os.path.join(hash_dir, 'attacks'))
+  maybe_make_dir(os.path.join(hash_dir, 'defenses'))
   maybe_make_dir(attacks_output_dir)
   maybe_make_dir(targeted_attacks_output_dir)
   maybe_make_dir(defenses_output_dir)
