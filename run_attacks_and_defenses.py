@@ -104,7 +104,7 @@ class Attack(Submission):
     # Check whether we already computed images for this *exact* submission
     # The file name encodes the submission's name and the target dir
     fname = '{}_{}'.format(
-      hashlib.sha1(self.directory).hexdigest(),
+      self.name,
       hashlib.sha1(output_dir).hexdigest(),
     )
     # We encode the current request with the hash of the submission, and
@@ -164,7 +164,7 @@ class Defense(Submission):
     # Check whether we already computed results for this *exact* submission
     # The file name encodes the submission's name and the target dir.
     fname = '{}_{}'.format(
-      hashlib.sha1(self.directory).hexdigest(),
+      self.name,
       hashlib.sha1(output_dir).hexdigest(),
     )
     # We encode the current request with the hash of the submission, and
