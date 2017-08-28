@@ -4,6 +4,7 @@
 
 # ignore Tensorflow checkpoints
 *.ckpt
+*.ckpt.*
 # ignore dataset images
 dataset/images
 output
