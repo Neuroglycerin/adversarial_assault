@@ -18,4 +18,4 @@ python attack_fgsm.py \
   --input_dir="${INPUT_DIR}" \
   --output_dir="${OUTPUT_DIR}" \
   --max_epsilon="${MAX_EPSILON}" \
-  --checkpoint_path=inception_v3.ckpt
+  --checkpoint_path=adv_inception_v3.ckpt
