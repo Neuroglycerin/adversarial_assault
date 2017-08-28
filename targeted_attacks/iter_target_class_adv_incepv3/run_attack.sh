@@ -22,4 +22,4 @@ python attack_iter_target_class.py \
   --output_dir="${OUTPUT_DIR}" \
   --max_epsilon="${MAX_EPSILON}" \
   --num_iter="${NUM_ITERATIONS}" \
-  --checkpoint_path=inception_v3.ckpt
+  --checkpoint_path=adv_inception_v3.ckpt
