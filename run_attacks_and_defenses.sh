@@ -24,6 +24,9 @@ else
     mkdir -p "${WORKING_DIR}"
 fi
 echo "Preparing working directory: ${WORKING_DIR}"
+rm -rf "${WORKING_DIR}/attacks"
+rm -rf "${WORKING_DIR}/targeted_attacks"
+rm -rf "${WORKING_DIR}/defenses"
 mkdir -p "${WORKING_DIR}/attacks"
 mkdir -p "${WORKING_DIR}/targeted_attacks"
 mkdir -p "${WORKING_DIR}/defenses"
