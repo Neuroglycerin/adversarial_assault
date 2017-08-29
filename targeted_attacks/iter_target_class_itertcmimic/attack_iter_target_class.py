@@ -111,6 +111,7 @@ def main(_):
   # eps is a difference between pixels so it should be in [0, 2] interval.
   # Renormalizing epsilon from [0, 255] to [0, 2].
   eps = 2.0 * FLAGS.max_epsilon / 255.0
+  num_iter = FLAGS.num_iter
   alpha = 2 * eps / num_iter
 
   batch_shape = [FLAGS.batch_size, FLAGS.image_height, FLAGS.image_width, 3]
