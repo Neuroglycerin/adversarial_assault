@@ -1,6 +1,6 @@
 """Implementation of sample defense.
 
-This defense loads inception v3 checkpoint and classifies all images
+This defense loads inception v4 checkpoint and classifies all images
 using loaded checkpoint.
 """
 
