@@ -76,10 +76,8 @@ def load_images(input_dir, batch_shape):
   idx = 0
   batch_size = batch_shape[0]
   for filepath in tf.gfile.Glob(os.path.join(input_dir, '*.png')):
-    print(filepath)
-    image = imread(filepath, mode='RGB').astype(np.float) / 255.0
-    #with tf.gfile.Open(filepath) as f:
-    #  image = imread(f, mode='RGB').astype(np.float) / 255.0
+    with tf.gfile.Open(filepath) as f:
+      image = imread(f, mode='RGB').astype(np.float) / 255.0
     # Images for inception classifier are normalized to be in [-1, 1] interval.
     images[idx, :, :, :] = image * 2.0 - 1.0
     filenames.append(os.path.basename(filepath))
