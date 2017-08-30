@@ -15,3 +15,5 @@ if [ ! -e "inception_v3.ckpt" ]; then
     rm inception_v3_2016_08_28.tar.gz
 fi
 
+git clone https://github.com/tensorflow/cleverhans.git
+
