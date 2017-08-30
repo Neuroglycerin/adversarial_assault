@@ -69,6 +69,24 @@ class Submission(object):
     """Returns appropriate Docker binary to use."""
     return 'nvidia-docker' if self.use_gpu else 'docker'
 
+  def __eq__(self, other):
+    return self.name == other.name
+
+  def __ne__(self, other):
+    return not (self == other)
+
+  def __lt__(self, other):
+    return self.name < other.name
+
+  def __le__(self, other):
+    return self.name <= other.name
+
+  def __gt__(self, other):
+    return self.name > other.name
+
+  def __ge__(self, other):
+    return self.name >= other.name
+
 
 class Attack(Submission):
   """Class which stores and runs attack."""
