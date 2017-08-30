@@ -14,7 +14,8 @@ import numpy as np
 from scipy.misc import imread
 
 import tensorflow as tf
-from tensorflow.contrib.slim.nets import inception
+
+import inception_v4
 
 slim = tf.contrib.slim
 
@@ -86,8 +87,8 @@ def main(_):
     # Prepare graph
     x_input = tf.placeholder(tf.float32, shape=batch_shape)
 
-    with slim.arg_scope(inception.inception_v4_arg_scope()):
-      _, end_points = inception.inception_v4(
+    with slim.arg_scope(inception_v4.inception_v4_arg_scope()):
+      _, end_points = inception_v4.inception_v4(
           x_input, num_classes=num_classes, is_training=False)
 
     predicted_labels = tf.argmax(end_points['Predictions'], 1)
