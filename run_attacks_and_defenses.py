@@ -569,6 +569,10 @@ def main():
                                                  args.use_gpu)
       if isinstance(d, Defense)
   ]
+  attacks = sorted(attacks)
+  targeted_attacks = sorted(targeted_attacks)
+  defenses = sorted(defenses)
+
   print('Found attacks: ', [a.name for a in attacks])
   print('Found tageted attacks: ', [a.name for a in targeted_attacks])
   print('Found defenses: ', [d.name for d in defenses])
