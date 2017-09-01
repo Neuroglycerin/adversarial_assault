@@ -61,11 +61,7 @@ def load_images(input_dir, batch_shape):
     batch_size = batch_shape[0]
     for filepath in tf.gfile.Glob(os.path.join(input_dir, '*.png')):
         with tf.gfile.Open(filepath) as f:
-            image = np.array(
-                Image.open(
-                    f).convert(
-                        'RGB')).astype(
-                np.float) / 255.0
+            image = np.array(Image.open(f).convert('RGB')).astype(np.float) / 255.0
         # Images for inception classifier are normalized to be in [-1, 1]
         # interval.
         images[idx, :, :, :] = image * 2.0 - 1.0
@@ -126,11 +122,15 @@ def main(_):
         with slim.arg_scope(inception.inception_v3_arg_scope()):
             logits, end_points = inception.inception_v3(
                 x_input, num_classes=num_classes, is_training=False, reuse=True)
-        cross_entropy += tf.losses.softmax_cross_entropy(one_hot_target_class,
-                                                         logits)
 
-        scaled_signed_grad = eps * \
-            tf.sign(tf.gradients(cross_entropy, x_input)[0])
+        # Using model predictions as ground truth to avoid label leaking
+        preds = end_points['Predictions']
+        preds_max = tf.reduce_max(preds, 1, keep_dims=True)
+        y = tf.to_float(tf.equal(preds, preds_max))
+        y = y / tf.reduce_sum(y, 1, keep_dims=True)
+        cross_entropy += tf.losses.softmax_cross_entropy(y, logits)
+
+        scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x_input)[0])
         x_adv = tf.stop_gradient(x_input + scaled_signed_grad)
         x_adv = tf.clip_by_value(x_adv, x_min, x_max)
 
