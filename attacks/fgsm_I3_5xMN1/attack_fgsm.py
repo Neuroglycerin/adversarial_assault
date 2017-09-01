@@ -110,35 +110,38 @@ def main(_):
         x_input = tf.placeholder(tf.float32, shape=batch_shape)
         x_max = tf.clip_by_value(x_input + eps, -1.0, 1.0)
         x_min = tf.clip_by_value(x_input - eps, -1.0, 1.0)
+        x_224 = tf.image.resize_images(x_input, (224, 224))
+        x_192 = tf.image.resize_images(x_input, (192, 192))
+        x_160 = tf.image.resize_images(x_input, (160, 160))
 
         with slim.arg_scope(inception.inception_v3_arg_scope()):
             inception.inception_v3(
                 x_input, num_classes=num_classes, is_training=False)
 
         with slim.arg_scope(mobilenet_v1.mobilenet_v1_arg_scope()):
-          mobilenet_v1.mobilenet_v1(
-              x_input, num_classes=num_classes, is_training=False,
-              spatial_squeeze=False, scope='MobilenetV1_100_244')
+            mobilenet_v1.mobilenet_v1(
+                x_224, num_classes=num_classes, is_training=False,
+                spatial_squeeze=False, scope='MobilenetV1_100_244')
 
         with slim.arg_scope(mobilenet_v1.mobilenet_v1_arg_scope()):
-          mobilenet_v1.mobilenet_v1_075(
-              x_input, num_classes=num_classes, is_training=False,
-              spatial_squeeze=False, scope='MobilenetV1_075_244')
+            mobilenet_v1.mobilenet_v1_075(
+                x_224, num_classes=num_classes, is_training=False,
+                spatial_squeeze=False, scope='MobilenetV1_075_244')
 
         with slim.arg_scope(mobilenet_v1.mobilenet_v1_arg_scope()):
-          mobilenet_v1.mobilenet_v1(
-              x_input, num_classes=num_classes, is_training=False,
-              spatial_squeeze=False, scope='MobilenetV1_100_192')
+            mobilenet_v1.mobilenet_v1(
+                x_192, num_classes=num_classes, is_training=False,
+                spatial_squeeze=False, scope='MobilenetV1_100_192')
 
         with slim.arg_scope(mobilenet_v1.mobilenet_v1_arg_scope()):
-          mobilenet_v1.mobilenet_v1_075(
-              x_input, num_classes=num_classes, is_training=False,
-              spatial_squeeze=False, scope='MobilenetV1_075_192')
+            mobilenet_v1.mobilenet_v1_075(
+                x_192, num_classes=num_classes, is_training=False,
+                spatial_squeeze=False, scope='MobilenetV1_075_192')
 
         with slim.arg_scope(mobilenet_v1.mobilenet_v1_arg_scope()):
-          mobilenet_v1.mobilenet_v1_075(
-              x_input, num_classes=num_classes, is_training=False,
-              spatial_squeeze=False, scope='MobilenetV1_100_160')
+            mobilenet_v1.mobilenet_v1(
+                x_160, num_classes=num_classes, is_training=False,
+                spatial_squeeze=False, scope='MobilenetV1_100_160')
 
         x_adv = x_input
         all_logits = 0
@@ -204,7 +207,7 @@ def main(_):
         n_logits += 1
         n_preds += 1
 
-        x_160 = tf.image.resize_images(x_adv, (192, 192))
+        x_160 = tf.image.resize_images(x_adv, (160, 160))
 
         with slim.arg_scope(mobilenet_v1.mobilenet_v1_arg_scope()):
             logits, end_points = mobilenet_v1.mobilenet_v1(
