@@ -525,6 +525,8 @@ def compute_and_save_scores_and_ranking(attacks_output,
       (len(targeted_attack_names), len(defense_names)), dtype=np.int32)
   hit_target_class = np.zeros(
       (len(targeted_attack_names), len(defense_names)), dtype=np.int32)
+  nb_samples = np.zeros(
+      (len(attack_names), len(defense_names)), dtype=np.int32)
 
   for defense_name, defense_result in defenses_output.items():
     for image_filename, predicted_label in defense_result.items():
@@ -532,6 +534,7 @@ def compute_and_save_scores_and_ranking(attacks_output,
           attacks_output.image_by_base_filename(image_filename))
       true_label = dataset_meta.get_true_label(image_id)
       defense_idx = defense_names_idx[defense_name]
+      nb_samples[attack_idx, defense_idx] += 1
       if is_targeted:
         target_class = dataset_meta.get_target_class(image_id)
         if true_label == predicted_label:
@@ -568,6 +571,22 @@ def compute_and_save_scores_and_ranking(attacks_output,
   write_ranking(
       os.path.join(output_dir, 'targeted_attack_ranking.csv'),
       ['AttackName', 'Score'], targeted_attack_names, targeted_attack_scores)
+
+  nb_samples = np.sum(nb_samples, axis=0)
+  # Compute % accuracy for defense
+  nb_samples = None
+  all_matching = True
+  for defense_name, count in defense_nb_samples.items():
+    if all_matching and nb_samples is None:
+      nb_samples = count
+    elif nb_samples != count:
+      all_matching = False
+      nb_samples = max(nb_samples, count)
+
+  if all_matching:
+
+  write_score_matrix(os.path.join(output_dir, 'accuracy_for_defense.csv'),
+                     defense_scores, attack_names, defense_names)
 
   if save_all_classification:
     with open(os.path.join(output_dir, 'all_classification.csv'), 'w') as f:
