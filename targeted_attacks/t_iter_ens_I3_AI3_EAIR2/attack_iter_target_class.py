@@ -76,7 +76,6 @@ def load_images(input_dir, batch_shape):
   idx = 0
   batch_size = batch_shape[0]
   for filepath in tf.gfile.Glob(os.path.join(input_dir, '*.png')):
-    print(filepath)
     with tf.gfile.Open(filepath) as f:
       image = imread(f, mode='RGB').astype(np.float) / 255.0
     # Images for inception classifier are normalized to be in [-1, 1] interval.
@@ -154,49 +153,32 @@ def main(_):
         logits0, end_points0 = inception.inception_v3(
             x_adv, num_classes=num_classes, is_training=False, reuse=True)
       cross_entropy += tf.losses.softmax_cross_entropy(one_hot_target_class,
-                                                      logits0,
-                                                      label_smoothing=0.1,
-                                                      weights=1.0)
+                                                      logits0)
       cross_entropy += tf.losses.softmax_cross_entropy(one_hot_target_class,
-                                                       end_points0['AuxLogits'],
-                                                       label_smoothing=0.1,
-                                                       weights=0.4)
+                                                       end_points0['AuxLogits'])
 
       with slim.arg_scope(inception.inception_v3_arg_scope()):
         logits1, end_points1 = inception.inception_v3(
             x_adv, num_classes=num_classes, is_training=False, reuse=True,
             scope='AdvInceptionV3')
       cross_entropy += tf.losses.softmax_cross_entropy(one_hot_target_class,
-                                                      logits1,
-                                                      label_smoothing=0.1,
-                                                      weights=1.0)
+                                                      logits1)
       cross_entropy += tf.losses.softmax_cross_entropy(one_hot_target_class,
-                                                       end_points1['AuxLogits'],
-                                                       label_smoothing=0.1,
-                                                       weights=0.4)
+                                                       end_points1['AuxLogits'])
 
       with slim.arg_scope(inception_resnet_v2.inception_resnet_v2_arg_scope()):
         logits2, end_points2 = inception_resnet_v2.inception_resnet_v2(
             x_adv, num_classes=num_classes, is_training=False, reuse=True)
       cross_entropy += tf.losses.softmax_cross_entropy(one_hot_target_class,
-                                                      logits2,
-                                                      label_smoothing=0.1,
-                                                      weights=1.0)
+                                                      logits2)
       cross_entropy += tf.losses.softmax_cross_entropy(one_hot_target_class,
-                                                       end_points2['AuxLogits'],
-                                                       label_smoothing=0.1,
-                                                       weights=0.4)
+                                                       end_points2['AuxLogits'])
 
       x_next = x_adv - alpha * tf.sign(tf.gradients(cross_entropy, x_adv)[0])
       x_next = tf.clip_by_value(x_next, x_min, x_max)
       x_adv = x_next
 
     # Run computation
-    saver = tf.train.Saver(slim.get_model_variables())
-    session_creator = tf.train.ChiefSessionCreator(
-        scaffold=tf.train.Scaffold(saver=saver),
-        master=FLAGS.master)
-
     with tf.Session() as sess:
       saver0 = tf.train.Saver(
         tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='InceptionV3'))
