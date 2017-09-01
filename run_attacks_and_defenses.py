@@ -132,6 +132,9 @@ class Attack(Submission):
         self.sec_per_100_samples = None
     else:
         self.sec_per_100_samples = 100 * duration / n_files
+    filepath = os.path.join(output_dir, 'time_per_100.txt')
+    with open(filepath, 'w') as f:
+      f.write(str(self.sec_per_100_samples))
 
   def maybe_run(self, hash_folder, input_dir, output_dir, epsilon):
     # Check whether we already computed images for this *exact* submission
@@ -203,6 +206,9 @@ class Defense(Submission):
         self.sec_per_100_samples = None
     else:
         self.sec_per_100_samples = 100 * duration / n_files
+    filepath = os.path.join(output_dir, 'time_per_100.txt')
+    with open(filepath, 'w') as f:
+      f.write(str(self.sec_per_100_samples))
 
   def maybe_run(self, hash_folder, input_dir, output_dir):
     # Check whether we already computed results for this *exact* submission
@@ -312,6 +318,8 @@ class AttacksOutput(object):
     self._targeted_attack_image_count = 0
     self._attack_names = set()
     self._targeted_attack_names = set()
+    self.sec_per_100_samples_attack = {}
+    self.sec_per_100_samples_targeted_attack = {}
 
   def _load_dataset_clipping(self, dataset_dir, epsilon):
     """Helper method which loads dataset and determines clipping range.
@@ -353,6 +361,13 @@ class AttacksOutput(object):
                               if is_targeted
                               else self.attacks_output_dir,
                               attack_name)
+
+    dur = load_duration(os.path.join(attack_dir, 'time_per_100.txt'))
+    if is_targeted:
+      self.sec_per_100_samples_attack[attack_name] = dur
+    else:
+      self.sec_per_100_samples_targeted_attack[attack_name] = dur
+
     for fname in os.listdir(attack_dir):
       if not (fname.endswith('.png') or fname.endswith('.jpg')):
         continue
@@ -466,11 +481,17 @@ def load_defense_output(filename):
   return result
 
 
+def load_duration(filename):
+  with open(filename) as f:
+    return float(f.read())
+
+
 def compute_and_save_scores_and_ranking(attacks_output,
                                         defenses_output,
                                         dataset_meta,
                                         output_dir,
-                                        save_all_classification=False):
+                                        save_all_classification=False,
+                                        defenses_duration=None):
   """Computes scores and ranking and saves it.
 
   Args:
@@ -600,6 +621,20 @@ def compute_and_save_scores_and_ranking(attacks_output,
       os.path.join(output_dir, 'targeted_attack_ranking.csv'),
       ['AttackName', 'Score'], targeted_attack_names, targeted_attack_scores)
 
+  write_ranking(
+      os.path.join(output_dir, 'duration_attack.csv'),
+      ['AttackName', 'DurationPer100Samples'], attack_names,
+      attacks_output.sec_per_100_samples_targeted_attack)
+  write_ranking(
+      os.path.join(output_dir, 'duration_targeted_attack.csv'),
+      ['AttackName', 'DurationPer100Samples'], targeted_attack_names,
+      attacks_output.sec_per_100_samples_targeted_attack)
+  if defenses_duration:
+      write_ranking(
+          os.path.join(output_dir, 'duration_defense.csv'),
+          ['DefenseName', 'DurationPer100Samples'], defense_names,
+          defenses_duration)
+
   if save_all_classification:
     with open(os.path.join(output_dir, 'all_classification.csv'), 'w') as f:
       writer = csv.writer(f)
@@ -703,17 +738,21 @@ def main():
 
   # Run all defenses.
   defenses_output = {}
+  defenses_duration = {}
   for d in defenses:
     d.maybe_run(hash_dir,
           all_adv_examples_dir,
           os.path.join(defenses_output_dir, d.name))
     defenses_output[d.name] = load_defense_output(
         os.path.join(defenses_output_dir, d.name, 'result.csv'))
+    defenses_duration[d.name] = load_duration(
+        os.path.join(defenses_output_dir, d.name, 'time_per_100.txt'))
 
   # Compute and save scoring.
   compute_and_save_scores_and_ranking(attacks_output, defenses_output,
                                       dataset_meta, args.output_dir,
-                                      args.save_all_classification)
+                                      args.save_all_classification,
+                                      defenses_duration=defenses_duration)
 
 
 if __name__ == '__main__':
