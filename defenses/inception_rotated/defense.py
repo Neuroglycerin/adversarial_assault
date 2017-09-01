@@ -86,7 +86,9 @@ def main(_):
   with tf.Graph().as_default():
     # Prepare graph
     x_input = tf.placeholder(tf.float32, shape=batch_shape)
-    # x_input_rotated = tf.contrib.image.rotate(x_input, 10 * math.pi / 180, interpolation='BILINEAR')
+    x_input_rotated = tf.contrib.image.rotate(
+                        x_input, 10 * math.pi / 180, interpolation='BILINEAR')
+
     with slim.arg_scope(inception.inception_v3_arg_scope()):
       _, end_points = inception.inception_v3(
           x_input, num_classes=num_classes, is_training=False)
