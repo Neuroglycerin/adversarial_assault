@@ -126,7 +126,7 @@ class Attack(Submission):
     n_files = len([name for name in os.listdir(output_dir)
         if os.path.isfile(os.path.join(output_dir, name))])
     print('Attack {} took {} seconds and outputed {} images'.format(
-        self.name, duration, n_files)
+        self.name, duration, n_files))
     self.sec_per_100_samples = 100 * duration / n_files
     self.output_count = n_files
 
@@ -194,7 +194,7 @@ class Defense(Submission):
     duration = t1-t0
     n_files = count_lines_in_file(os.path.join(output_dir, 'result.csv'))
     print('Defence {} took {} seconds and outputed {} entries'.format(
-        self.name, duration, n_files)
+        self.name, duration, n_files))
     self.sec_per_100_samples = 100 * duration / n_files
     self.output_count = n_files
 
