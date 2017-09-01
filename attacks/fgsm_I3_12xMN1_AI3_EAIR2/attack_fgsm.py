@@ -12,6 +12,7 @@ from PIL import Image
 import tensorflow as tf
 from tensorflow.contrib.slim.nets import inception
 import mobilenet_v1
+import inception_resnet_v2
 
 slim = tf.contrib.slim
 
