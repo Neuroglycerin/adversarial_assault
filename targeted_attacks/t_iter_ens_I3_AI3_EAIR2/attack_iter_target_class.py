@@ -35,7 +35,7 @@ tf.flags.DEFINE_float(
     'max_epsilon', 16.0, 'Maximum size of adversarial perturbation.')
 
 tf.flags.DEFINE_float(
-    'iter_alpha', 1.0, 'Step size for one iteration.')
+    'iter_alpha', 1.3, 'Step size for one iteration.')
 
 tf.flags.DEFINE_integer(
     'num_iter', 20, 'Number of iterations.')
@@ -47,7 +47,7 @@ tf.flags.DEFINE_integer(
     'image_height', 299, 'Height of each input images.')
 
 tf.flags.DEFINE_integer(
-    'batch_size', 16, 'How many images process at one time.')
+    'batch_size', 1, 'How many images process at one time.')
 
 FLAGS = tf.flags.FLAGS
 
