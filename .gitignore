@@ -5,6 +5,7 @@
 # ignore Tensorflow checkpoints
 *.ckpt
 *.ckpt.*
+*.tar.gz
 # ignore dataset images
 dataset/images
 output

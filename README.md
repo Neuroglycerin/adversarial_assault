@@ -12,15 +12,14 @@ You will have to manually copy checkpoint files from `sample_*` into into `our_*
 
 Example attack:
 ```
-cd sample_targeted_attacks/step_target_class
+cd targeted_attacks/step_target_class
 mkdir -p output
-rm -f output/*.png
-./run_attack.sh ../../dataset/images/ ./output 10
+rm -f output/*.png && ./run_attack.sh ../../dataset/images/ ./output 16
 ```
 
 Example defence:
 ```
-cd sample_defenses/base_inception_model
+cd defenses/base_inception_model
 ./run_defense.sh ../../dataset/images/ output.csv
 ```
 
