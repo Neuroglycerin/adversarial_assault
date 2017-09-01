@@ -91,7 +91,7 @@ def main(_):
 
     with slim.arg_scope(inception.inception_v3_arg_scope()):
       _, end_points = inception.inception_v3(
-          x_input, num_classes=num_classes, is_training=False)
+          x_input_rotated, num_classes=num_classes, is_training=False)
 
     predicted_labels = tf.argmax(end_points['Predictions'], 1)
 
