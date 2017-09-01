@@ -14,6 +14,7 @@ from PIL import Image
 import hashlib
 from checksumdir import dirhash
 import errno
+import time
 
 
 def parse_args():
@@ -64,6 +65,8 @@ class Submission(object):
     self.container = container
     self.entry_point = entry_point
     self.use_gpu = use_gpu
+    self.sec_per_100_samples = None
+    self.output_count = 0
 
   def docker_binary(self):
     """Returns appropriate Docker binary to use."""
@@ -105,6 +108,7 @@ class Attack(Submission):
         should be in range [0, 255].
     """
     print('Running attack ', self.name)
+    t0 = time.time()
     cmd = [self.docker_binary(), 'run',
            '-v', '{0}:/input_images'.format(input_dir),
            '-v', '{0}:/output_images'.format(output_dir),
@@ -117,6 +121,14 @@ class Attack(Submission):
            str(epsilon)]
     print(' '.join(cmd))
     subprocess.call(cmd)
+    t1 = time.time()
+    duration = t1-t0
+    n_files = len([name for name in os.listdir(output_dir)
+        if os.path.isfile(os.path.join(output_dir, name))])
+    print('Attack {} took {} seconds and outputed {} images'.format(
+        self.name, duration, n_files)
+    self.sec_per_100_samples = 100 * duration / n_files
+    self.output_count = n_files
 
   def maybe_run(self, hash_folder, input_dir, output_dir, epsilon):
     # Check whether we already computed images for this *exact* submission
@@ -166,6 +178,7 @@ class Defense(Submission):
       output_dir: directory to write output (classification result).
     """
     print('Running defense ', self.name)
+    t0 = time.time()
     cmd = [self.docker_binary(), 'run',
            '-v', '{0}:/input_images'.format(input_dir),
            '-v', '{0}:/output_data'.format(output_dir),
@@ -177,6 +190,13 @@ class Defense(Submission):
            '/output_data/result.csv']
     print(' '.join(cmd))
     subprocess.call(cmd)
+    t1 = time.time()
+    duration = t1-t0
+    n_files = count_lines_in_file(os.path.join(output_dir, 'result.csv'))
+    print('Defence {} took {} seconds and outputed {} entries'.format(
+        self.name, duration, n_files)
+    self.sec_per_100_samples = 100 * duration / n_files
+    self.output_count = n_files
 
   def maybe_run(self, hash_folder, input_dir, output_dir):
     # Check whether we already computed results for this *exact* submission
@@ -207,6 +227,14 @@ class Defense(Submission):
     # Remember that this is what we last output
     with open(filepath, 'w') as f:
       f.write(expected_hash)
+
+
+def count_lines_in_file(fname):
+    i = 0
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
 
 
 def read_submissions_from_directory(dirname, use_gpu):
