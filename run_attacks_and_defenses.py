@@ -598,19 +598,30 @@ def compute_and_save_scores_and_ranking(attacks_output,
       os.path.join(output_dir, 'targeted_attack_ranking.csv'),
       ['AttackName', 'Score'], targeted_attack_names, targeted_attack_scores)
 
+  attacks_duration = []
+  for name in attack_names:
+    attacks_duration.append(
+      attacks_output.sec_per_100_samples_attack[name])
+  targeted_attacks_duration = []
+  for name in targeted_attack_names:
+    targeted_attacks_duration.append(
+      attacks_output.sec_per_100_samples_targeted_attack[name])
+  defenses_duration_by_idx = []
+  for name in defense_names:
+    defenses_duration_by_idx.append(defenses_duration[name])
   write_ranking(
       os.path.join(output_dir, 'duration_attack.csv'),
       ['AttackName', 'DurationPer100Samples'], attack_names,
-      attacks_output.sec_per_100_samples_targeted_attack)
+      attacks_duration)
   write_ranking(
       os.path.join(output_dir, 'duration_targeted_attack.csv'),
       ['AttackName', 'DurationPer100Samples'], targeted_attack_names,
-      attacks_output.sec_per_100_samples_targeted_attack)
+      targeted_attacks_duration)
   if defenses_duration:
       write_ranking(
           os.path.join(output_dir, 'duration_defense.csv'),
           ['DefenseName', 'DurationPer100Samples'], defense_names,
-          defenses_duration)
+          defenses_duration_by_idx)
 
   if save_all_classification:
     with open(os.path.join(output_dir, 'all_classification.csv'), 'w') as f:
