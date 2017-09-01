@@ -74,27 +74,27 @@ if [ ! -e "mobilenet_v1_0.75_128.ckpt.data-00000-of-00001" ]; then
 fi
 
 
-if [ ! -e "mobilenet_v1_0.5_224.ckpt.data-00000-of-00001" ]; then
-    wget http://download.tensorflow.org/models/mobilenet_v1_0.5_224_2017_06_14.tar.gz
-    tar -xvzf mobilenet_v1_0.5_224_2017_06_14.tar.gz
-    rm mobilenet_v1_0.5_224_2017_06_14.tar.gz
+if [ ! -e "mobilenet_v1_0.50_224.ckpt.data-00000-of-00001" ]; then
+    wget http://download.tensorflow.org/models/mobilenet_v1_0.50_224_2017_06_14.tar.gz
+    tar -xvzf mobilenet_v1_0.50_224_2017_06_14.tar.gz
+    rm mobilenet_v1_0.50_224_2017_06_14.tar.gz
 fi
 
-if [ ! -e "mobilenet_v1_0.5_192.ckpt.data-00000-of-00001" ]; then
-    wget http://download.tensorflow.org/models/mobilenet_v1_0.5_192_2017_06_14.tar.gz
-    tar -xvzf mobilenet_v1_0.5_192_2017_06_14.tar.gz
-    rm mobilenet_v1_0.5_192_2017_06_14.tar.gz
+if [ ! -e "mobilenet_v1_0.50_192.ckpt.data-00000-of-00001" ]; then
+    wget http://download.tensorflow.org/models/mobilenet_v1_0.50_192_2017_06_14.tar.gz
+    tar -xvzf mobilenet_v1_0.50_192_2017_06_14.tar.gz
+    rm mobilenet_v1_0.50_192_2017_06_14.tar.gz
 fi
 
-if [ ! -e "mobilenet_v1_0.5_160.ckpt.data-00000-of-00001" ]; then
-    wget http://download.tensorflow.org/models/mobilenet_v1_0.5_160_2017_06_14.tar.gz
-    tar -xvzf mobilenet_v1_0.5_160_2017_06_14.tar.gz
-    rm mobilenet_v1_0.5_160_2017_06_14.tar.gz
+if [ ! -e "mobilenet_v1_0.50_160.ckpt.data-00000-of-00001" ]; then
+    wget http://download.tensorflow.org/models/mobilenet_v1_0.50_160_2017_06_14.tar.gz
+    tar -xvzf mobilenet_v1_0.50_160_2017_06_14.tar.gz
+    rm mobilenet_v1_0.50_160_2017_06_14.tar.gz
 fi
 
-if [ ! -e "mobilenet_v1_0.5_128.ckpt.data-00000-of-00001" ]; then
-    wget http://download.tensorflow.org/models/mobilenet_v1_0.5_128_2017_06_14.tar.gz
-    tar -xvzf mobilenet_v1_0.5_128_2017_06_14.tar.gz
-    rm mobilenet_v1_0.5_128_2017_06_14.tar.gz
+if [ ! -e "mobilenet_v1_0.50_128.ckpt.data-00000-of-00001" ]; then
+    wget http://download.tensorflow.org/models/mobilenet_v1_0.50_128_2017_06_14.tar.gz
+    tar -xvzf mobilenet_v1_0.50_128_2017_06_14.tar.gz
+    rm mobilenet_v1_0.50_128_2017_06_14.tar.gz
 fi
 

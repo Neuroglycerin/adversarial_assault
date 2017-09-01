@@ -413,25 +413,25 @@ def main(_):
                 for v in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                            scope='MobilenetV1_050_244')}
             saver = tf.train.Saver(var_list=var_dict)
-            saver.restore(sess, 'mobilenet_v1_0.5_224.ckpt')
+            saver.restore(sess, 'mobilenet_v1_0.50_224.ckpt')
 
             var_dict = {('MobilenetV1' + v.op.name.lstrip('MobilenetV1_050_192')): v
                 for v in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                            scope='MobilenetV1_050_192')}
             saver = tf.train.Saver(var_list=var_dict)
-            saver.restore(sess, 'mobilenet_v1_0.5_192.ckpt')
+            saver.restore(sess, 'mobilenet_v1_0.50_192.ckpt')
 
             var_dict = {('MobilenetV1' + v.op.name.lstrip('MobilenetV1_050_160')): v
                 for v in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                            scope='MobilenetV1_050_160')}
             saver = tf.train.Saver(var_list=var_dict)
-            saver.restore(sess, 'mobilenet_v1_0.5_160.ckpt')
+            saver.restore(sess, 'mobilenet_v1_0.50_160.ckpt')
 
             var_dict = {('MobilenetV1' + v.op.name.lstrip('MobilenetV1_050_128')): v
                 for v in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                            scope='MobilenetV1_050_128')}
             saver = tf.train.Saver(var_list=var_dict)
-            saver.restore(sess, 'mobilenet_v1_0.5_128.ckpt')
+            saver.restore(sess, 'mobilenet_v1_0.50_128.ckpt')
 
 
             for filenames, images in load_images(FLAGS.input_dir, batch_shape):
