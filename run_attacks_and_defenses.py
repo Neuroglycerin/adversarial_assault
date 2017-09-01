@@ -127,8 +127,11 @@ class Attack(Submission):
         if os.path.isfile(os.path.join(output_dir, name))])
     print('Attack {} took {} seconds and outputed {} images'.format(
         self.name, duration, n_files))
-    self.sec_per_100_samples = 100 * duration / n_files
     self.output_count = n_files
+    if n_files == 0:
+        self.sec_per_100_samples = None
+    else:
+        self.sec_per_100_samples = 100 * duration / n_files
 
   def maybe_run(self, hash_folder, input_dir, output_dir, epsilon):
     # Check whether we already computed images for this *exact* submission
@@ -195,8 +198,11 @@ class Defense(Submission):
     n_files = count_lines_in_file(os.path.join(output_dir, 'result.csv'))
     print('Defence {} took {} seconds and outputed {} entries'.format(
         self.name, duration, n_files))
-    self.sec_per_100_samples = 100 * duration / n_files
     self.output_count = n_files
+    if n_files == 0:
+        self.sec_per_100_samples = None
+    else:
+        self.sec_per_100_samples = 100 * duration / n_files
 
   def maybe_run(self, hash_folder, input_dir, output_dir):
     # Check whether we already computed results for this *exact* submission
