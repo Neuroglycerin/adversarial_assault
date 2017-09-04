@@ -155,11 +155,6 @@ def main(_):
       x_adv = x_next
 
     # Run computation
-    saver = tf.train.Saver(slim.get_model_variables())
-    session_creator = tf.train.ChiefSessionCreator(
-        scaffold=tf.train.Scaffold(saver=saver),
-        master=FLAGS.master)
-
     with tf.Session() as sess:
       saver0 = tf.train.Saver()
       saver0.restore(sess, 'resnet_v1_50.ckpt')

@@ -14,6 +14,7 @@ from PIL import Image
 import hashlib
 from checksumdir import dirhash
 import errno
+import time
 
 
 def parse_args():
@@ -64,6 +65,8 @@ class Submission(object):
     self.container = container
     self.entry_point = entry_point
     self.use_gpu = use_gpu
+    self.sec_per_100_samples = None
+    self.output_count = 0
 
   def docker_binary(self):
     """Returns appropriate Docker binary to use."""
@@ -105,6 +108,7 @@ class Attack(Submission):
         should be in range [0, 255].
     """
     print('Running attack ', self.name)
+    t0 = time.time()
     cmd = [self.docker_binary(), 'run',
            '-v', '{0}:/input_images'.format(input_dir),
            '-v', '{0}:/output_images'.format(output_dir),
@@ -117,6 +121,20 @@ class Attack(Submission):
            str(epsilon)]
     print(' '.join(cmd))
     subprocess.call(cmd)
+    t1 = time.time()
+    duration = t1-t0
+    n_files = len([name for name in os.listdir(output_dir)
+        if os.path.isfile(os.path.join(output_dir, name))])
+    print('Attack {} took {} seconds and outputed {} images'.format(
+        self.name, duration, n_files))
+    self.output_count = n_files
+    if n_files == 0:
+        self.sec_per_100_samples = None
+    else:
+        self.sec_per_100_samples = 100 * duration / n_files
+    filepath = os.path.join(output_dir, 'time_per_100.txt')
+    with open(filepath, 'w') as f:
+      f.write(str(self.sec_per_100_samples))
 
   def maybe_run(self, hash_folder, input_dir, output_dir, epsilon):
     # Check whether we already computed images for this *exact* submission
@@ -166,6 +184,7 @@ class Defense(Submission):
       output_dir: directory to write output (classification result).
     """
     print('Running defense ', self.name)
+    t0 = time.time()
     cmd = [self.docker_binary(), 'run',
            '-v', '{0}:/input_images'.format(input_dir),
            '-v', '{0}:/output_data'.format(output_dir),
@@ -177,6 +196,19 @@ class Defense(Submission):
            '/output_data/result.csv']
     print(' '.join(cmd))
     subprocess.call(cmd)
+    t1 = time.time()
+    duration = t1-t0
+    n_files = count_lines_in_file(os.path.join(output_dir, 'result.csv'))
+    print('Defence {} took {} seconds and outputed {} entries'.format(
+        self.name, duration, n_files))
+    self.output_count = n_files
+    if n_files == 0:
+        self.sec_per_100_samples = None
+    else:
+        self.sec_per_100_samples = 100 * duration / n_files
+    filepath = os.path.join(output_dir, 'time_per_100.txt')
+    with open(filepath, 'w') as f:
+      f.write(str(self.sec_per_100_samples))
 
   def maybe_run(self, hash_folder, input_dir, output_dir):
     # Check whether we already computed results for this *exact* submission
@@ -207,6 +239,14 @@ class Defense(Submission):
     # Remember that this is what we last output
     with open(filepath, 'w') as f:
       f.write(expected_hash)
+
+
+def count_lines_in_file(fname):
+    i = 0
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
 
 
 def read_submissions_from_directory(dirname, use_gpu):
@@ -278,6 +318,8 @@ class AttacksOutput(object):
     self._targeted_attack_image_count = 0
     self._attack_names = set()
     self._targeted_attack_names = set()
+    self.sec_per_100_samples_attack = {}
+    self.sec_per_100_samples_targeted_attack = {}
 
   def _load_dataset_clipping(self, dataset_dir, epsilon):
     """Helper method which loads dataset and determines clipping range.
@@ -319,6 +361,13 @@ class AttacksOutput(object):
                               if is_targeted
                               else self.attacks_output_dir,
                               attack_name)
+
+    dur = load_duration(os.path.join(attack_dir, 'time_per_100.txt'))
+    if is_targeted:
+      self.sec_per_100_samples_attack[attack_name] = dur
+    else:
+      self.sec_per_100_samples_targeted_attack[attack_name] = dur
+
     for fname in os.listdir(attack_dir):
       if not (fname.endswith('.png') or fname.endswith('.jpg')):
         continue
@@ -432,11 +481,17 @@ def load_defense_output(filename):
   return result
 
 
+def load_duration(filename):
+  with open(filename) as f:
+    return float(f.read())
+
+
 def compute_and_save_scores_and_ranking(attacks_output,
                                         defenses_output,
                                         dataset_meta,
                                         output_dir,
-                                        save_all_classification=False):
+                                        save_all_classification=False,
+                                        defenses_duration=None):
   """Computes scores and ranking and saves it.
 
   Args:
@@ -481,13 +536,13 @@ def compute_and_save_scores_and_ranking(attacks_output,
     result[0, 1:] = column_names
     np.savetxt(filename, result, fmt='%s', delimiter=',')
 
-  attack_names = list(attacks_output.attack_names)
+  attack_names = sorted(list(attacks_output.attack_names))
   attack_names_idx = {name: index for index, name in enumerate(attack_names)}
-  targeted_attack_names = list(attacks_output.targeted_attack_names)
+  targeted_attack_names = sorted(list(attacks_output.targeted_attack_names))
   targeted_attack_names_idx = {name: index
                                for index, name
                                in enumerate(targeted_attack_names)}
-  defense_names = list(defenses_output.keys())
+  defense_names = sorted(list(defenses_output.keys()))
   defense_names_idx = {name: index for index, name in enumerate(defense_names)}
 
   # In the matrices below: rows - attacks, columns - defenses.
@@ -497,6 +552,10 @@ def compute_and_save_scores_and_ranking(attacks_output,
       (len(targeted_attack_names), len(defense_names)), dtype=np.int32)
   hit_target_class = np.zeros(
       (len(targeted_attack_names), len(defense_names)), dtype=np.int32)
+  nb_samples_for_attacks = np.zeros(
+      (len(attack_names), len(defense_names)), dtype=np.int32)
+  nb_samples_for_targeted_attacks = np.zeros(
+      (len(targeted_attack_names), len(defense_names)), dtype=np.int32)
 
   for defense_name, defense_result in defenses_output.items():
     for image_filename, predicted_label in defense_result.items():
@@ -505,16 +564,17 @@ def compute_and_save_scores_and_ranking(attacks_output,
       true_label = dataset_meta.get_true_label(image_id)
       defense_idx = defense_names_idx[defense_name]
       if is_targeted:
+        attack_idx = targeted_attack_names_idx[attack_name]
+        nb_samples_for_targeted_attacks[attack_idx, defense_idx] += 1
         target_class = dataset_meta.get_target_class(image_id)
         if true_label == predicted_label:
-          attack_idx = targeted_attack_names_idx[attack_name]
           accuracy_on_targeted_attacks[attack_idx, defense_idx] += 1
         if target_class == predicted_label:
-          attack_idx = targeted_attack_names_idx[attack_name]
           hit_target_class[attack_idx, defense_idx] += 1
       else:
+        attack_idx = attack_names_idx[attack_name]
+        nb_samples_for_attacks[attack_idx, defense_idx] += 1
         if true_label == predicted_label:
-          attack_idx = attack_names_idx[attack_name]
           accuracy_on_attacks[attack_idx, defense_idx] += 1
 
   # Save matrices.
@@ -526,11 +586,31 @@ def compute_and_save_scores_and_ranking(attacks_output,
   write_score_matrix(os.path.join(output_dir, 'hit_target_class.csv'),
                      hit_target_class, targeted_attack_names, defense_names)
 
+  write_score_matrix(
+      os.path.join(output_dir, 'rel_accuracy_on_attacks.csv'),
+      accuracy_on_attacks / nb_samples_for_attacks,
+      attack_names, defense_names)
+  write_score_matrix(
+      os.path.join(output_dir, 'rel_accuracy_on_targeted_attacks.csv'),
+      accuracy_on_targeted_attacks / nb_samples_for_targeted_attacks,
+      targeted_attack_names, defense_names)
+  write_score_matrix(
+      os.path.join(output_dir, 'rel_hit_target_class.csv'),
+      hit_target_class / nb_samples_for_targeted_attacks,
+      targeted_attack_names, defense_names)
+
+  write_score_matrix(
+      os.path.join(output_dir, 'nb_samples_for_attacks.csv'),
+      nb_samples_for_attacks, attack_names, defense_names)
+  write_score_matrix(
+      os.path.join(output_dir, 'nb_samples_for_targeted_attacks.csv'),
+      nb_samples_for_targeted_attacks, targeted_attack_names, defense_names)
+
   # Compute and save scores and ranking of attacks and defenses,
   # higher scores are better.
   defense_scores = (np.sum(accuracy_on_attacks, axis=0)
                     + np.sum(accuracy_on_targeted_attacks, axis=0))
-  attack_scores = (attacks_output.dataset_image_count * len(defenses_output)
+  attack_scores = (np.sum(nb_samples_for_attacks, axis=1)
                    - np.sum(accuracy_on_attacks, axis=1))
   targeted_attack_scores = np.sum(hit_target_class, axis=1)
   write_ranking(os.path.join(output_dir, 'defense_ranking.csv'),
@@ -540,6 +620,31 @@ def compute_and_save_scores_and_ranking(attacks_output,
   write_ranking(
       os.path.join(output_dir, 'targeted_attack_ranking.csv'),
       ['AttackName', 'Score'], targeted_attack_names, targeted_attack_scores)
+
+  attacks_duration = []
+  for name in attack_names:
+    attacks_duration.append(
+      attacks_output.sec_per_100_samples_attack[name])
+  targeted_attacks_duration = []
+  for name in targeted_attack_names:
+    targeted_attacks_duration.append(
+      attacks_output.sec_per_100_samples_targeted_attack[name])
+  defenses_duration_by_idx = []
+  for name in defense_names:
+    defenses_duration_by_idx.append(defenses_duration[name])
+  write_ranking(
+      os.path.join(output_dir, 'duration_attack.csv'),
+      ['AttackName', 'DurationPer100Samples'], attack_names,
+      attacks_duration)
+  write_ranking(
+      os.path.join(output_dir, 'duration_targeted_attack.csv'),
+      ['AttackName', 'DurationPer100Samples'], targeted_attack_names,
+      targeted_attacks_duration)
+  if defenses_duration:
+      write_ranking(
+          os.path.join(output_dir, 'duration_defense.csv'),
+          ['DefenseName', 'DurationPer100Samples'], defense_names,
+          defenses_duration_by_idx)
 
   if save_all_classification:
     with open(os.path.join(output_dir, 'all_classification.csv'), 'w') as f:
@@ -644,17 +749,21 @@ def main():
 
   # Run all defenses.
   defenses_output = {}
+  defenses_duration = {}
   for d in defenses:
     d.maybe_run(hash_dir,
           all_adv_examples_dir,
           os.path.join(defenses_output_dir, d.name))
     defenses_output[d.name] = load_defense_output(
         os.path.join(defenses_output_dir, d.name, 'result.csv'))
+    defenses_duration[d.name] = load_duration(
+        os.path.join(defenses_output_dir, d.name, 'time_per_100.txt'))
 
   # Compute and save scoring.
   compute_and_save_scores_and_ranking(attacks_output, defenses_output,
                                       dataset_meta, args.output_dir,
-                                      args.save_all_classification)
+                                      args.save_all_classification,
+                                      defenses_duration=defenses_duration)
 
 
 if __name__ == '__main__':
