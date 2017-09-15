@@ -118,7 +118,8 @@ class Attack(Submission):
            './' + self.entry_point,
            '/input_images',
            '/output_images',
-           str(epsilon)]
+           str(epsilon),
+           '2>&1 | tee -a {0}/stdout.log'.format(output_dir)]
     print(' '.join(cmd))
     subprocess.call(cmd)
     t1 = time.time()
@@ -193,7 +194,8 @@ class Defense(Submission):
            self.container,
            './' + self.entry_point,
            '/input_images',
-           '/output_data/result.csv']
+           '/output_data/result.csv',
+           '2>&1 | tee -a {0}/stdout.log'.format(output_dir)]
     print(' '.join(cmd))
     subprocess.call(cmd)
     t1 = time.time()
