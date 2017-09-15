@@ -324,6 +324,7 @@ def main(_):
         n_preds += 1
 
 
+        n_logits = len(all_logits)
         preds = all_preds / n_logits
 
         preds_max = tf.reduce_max(preds, 1, keep_dims=True)
