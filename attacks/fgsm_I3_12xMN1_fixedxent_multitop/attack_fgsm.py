@@ -336,10 +336,13 @@ def main(_):
         sort_indices_offset = sort_indices + tf.expand_dims(tf.range(FLAGS.batch_size), 1)
 
         preds_sum = tf.cumsum(preds_sorted, axis=-1, exclusive=True)
-        weights_sorted = tf.select(preds_sum < P_THRESHOLD,
-                                   preds_sorted,
-                                   tf.zeros_like(preds))
-        weights = tf.scatter_nd(sort_indices_offset, weights_sorted, preds.shape)
+        class_is_before_threshold = preds_sum < P_THRESHOLD
+        weights_sorted = preds_sorted * tf.cast(class_is_before_threshold, preds_sorted.dtype)
+        # 1 x 1000
+        weights = tf.scatter_nd(tf.expand_dims(tf.reshape(sort_indices_offset, [-1]), -1),
+                                tf.reshape(weights_sorted, [-1]),
+                                [FLAGS.batch_size * num_classes])
+        weights = tf.reshape(weights, preds.shape)
 
         cross_entropy = 0
         for logits in all_logits:
