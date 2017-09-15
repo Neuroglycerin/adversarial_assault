@@ -330,12 +330,9 @@ def main(_):
         preds = preds / tf.reduce_sum(preds, axis=-1, keep_dims=True)
 
         P_THRESHOLD = 0.95
-        remainder = 1 - P_THRESHOLD
-        min_per_class = 1 / num_classes
-        k_can_cut = remainder / min_per_class
 
         preds_sorted, sort_indices = tf.nn.top_k(
-            preds, k=int(num_classes - k_can_cut), sorted=True)
+            preds, k=(num_classes - 1), sorted=True)
         sort_indices_offset = sort_indices + tf.expand_dims(tf.range(FLAGS.batch_size), 1)
 
         preds_sum = tf.cumsum(preds_sorted, axis=-1, exclusive=True)
