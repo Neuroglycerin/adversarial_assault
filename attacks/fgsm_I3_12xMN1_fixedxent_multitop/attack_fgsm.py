@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import math
 
 import numpy as np
 from PIL import Image
@@ -328,21 +329,24 @@ def main(_):
         preds = all_preds / n_preds
         preds = preds / tf.reduce_sum(preds, axis=-1, keep_dims=True)
 
-        preds_sorted, preds_sorted_indices = tf.nn.top_k(
-            preds, k=preds.shape[-1], sorted=True)
-        probability_mass = 0
         P_THRESHOLD = 0.95
-        weighted_target_classes = tf.zeros_like(preds)
-        for weight, idx in zip(preds_sorted, preds_sorted_indices):
-            weighted_target_classes[idx] = weight
-            probability_mass += weight
-            if probability_mass >= P_THRESHOLD:
-                break
+        remainder = 1 - P_THRESHOLD
+        min_per_class = 1 / num_classes
+        k_can_cut = remainder / min_per_class
+
+        preds_sorted, sort_indices = tf.nn.top_k(
+            preds, k=int(num_classes - k_can_cut), sorted=True)
+        sort_indices_offset = sort_indices + tf.expand_dims(tf.range(FLAGS.batch_size), 1)
+
+        preds_sum = tf.cumsum(preds_sorted, axis=-1, exclusive=True)
+        weights_sorted = tf.select(preds_sum < P_THRESHOLD,
+                                   preds_sorted,
+                                   tf.zeros_like(preds))
+        weights = tf.scatter_nd(sort_indices_offset, weights_sorted, preds.shape)
 
         cross_entropy = 0
         for logits in all_logits:
-            cross_entropy += tf.losses.softmax_cross_entropy(
-                weighted_target_classes, logits)
+            cross_entropy += tf.losses.softmax_cross_entropy(weights, logits)
 
         scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x_input)[0])
         x_adv = tf.stop_gradient(x_input + scaled_signed_grad)
