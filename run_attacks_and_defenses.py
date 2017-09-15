@@ -366,9 +366,9 @@ class AttacksOutput(object):
 
     dur = load_duration(os.path.join(attack_dir, 'time_per_100.txt'))
     if is_targeted:
-      self.sec_per_100_samples_attack[attack_name] = dur
-    else:
       self.sec_per_100_samples_targeted_attack[attack_name] = dur
+    else:
+      self.sec_per_100_samples_attack[attack_name] = dur
 
     for fname in os.listdir(attack_dir):
       if not (fname.endswith('.png') or fname.endswith('.jpg')):
