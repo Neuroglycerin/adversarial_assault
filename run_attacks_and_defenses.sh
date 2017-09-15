@@ -16,13 +16,9 @@ MAX_EPSILON=16
 # Prepare working directory and copy all necessary files.
 # In particular copy attacks defenses and dataset, so originals won't
 # be overwritten.
-if [[ "${OSTYPE}" == "darwin"* ]]; then
-    WORKING_DIR="/private"$(mktemp -d)
-else
-    #WORKING_DIR=$(mktemp -d)
-    WORKING_DIR="$(dirname "${SCRIPT_DIR}")"/working
-    mkdir -p "${WORKING_DIR}"
-fi
+WORKING_DIR=${1:-"$(dirname "${SCRIPT_DIR}")"/working}
+mkdir -p "${WORKING_DIR}"
+
 echo "Preparing working directory: ${WORKING_DIR}"
 rm -rf "${WORKING_DIR}/attacks"
 rm -rf "${WORKING_DIR}/targeted_attacks"
