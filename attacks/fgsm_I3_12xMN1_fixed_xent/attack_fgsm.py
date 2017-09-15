@@ -330,6 +330,7 @@ def main(_):
         preds_max = tf.reduce_max(preds, 1, keep_dims=True)
         y = tf.to_float(tf.equal(preds, preds_max))
         y = y / tf.reduce_sum(y, 1, keep_dims=True)
+        cross_entropy = 0
         for logits in all_logits:
             cross_entropy += tf.losses.softmax_cross_entropy(y, logits)
 
