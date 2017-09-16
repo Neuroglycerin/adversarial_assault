@@ -41,6 +41,9 @@ tf.flags.DEFINE_integer(
 tf.flags.DEFINE_integer(
     'batch_size', 1, 'How many images process at one time.')
 
+tf.flags.DEFINE_float(
+    'p_threshold_antitarget', 0.50, 'What split of probabilities to anti-target.')
+
 FLAGS = tf.flags.FLAGS
 
 
@@ -329,14 +332,12 @@ def main(_):
         preds = all_preds / n_preds
         preds = preds / tf.reduce_sum(preds, axis=-1, keep_dims=True)
 
-        P_THRESHOLD = 0.95
-
         preds_sorted, sort_indices = tf.nn.top_k(
             preds, k=(num_classes - 1), sorted=True)
         sort_indices_offset = sort_indices + tf.expand_dims(tf.range(FLAGS.batch_size), 1)
 
         preds_sum = tf.cumsum(preds_sorted, axis=-1, exclusive=True)
-        class_is_before_threshold = preds_sum < P_THRESHOLD
+        class_is_before_threshold = preds_sum < FLAGS.p_threshold_antitarget
         weights_sorted = preds_sorted * tf.cast(class_is_before_threshold, preds_sorted.dtype)
         # 1 x 1000
         weights = tf.scatter_nd(tf.expand_dims(tf.reshape(sort_indices_offset, [-1]), -1),
