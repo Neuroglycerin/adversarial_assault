@@ -8,6 +8,7 @@ import argparse
 import csv
 import json
 import os
+import sys
 import subprocess
 import numpy as np
 from PIL import Image
@@ -108,6 +109,7 @@ class Attack(Submission):
         should be in range [0, 255].
     """
     print('Running attack ', self.name)
+    sys.stdout.flush()
     t0 = time.time()
     cmd = [self.docker_binary(), 'run',
            '-v', '{0}:/input_images'.format(input_dir),
@@ -185,6 +187,7 @@ class Defense(Submission):
       output_dir: directory to write output (classification result).
     """
     print('Running defense ', self.name)
+    sys.stdout.flush()
     t0 = time.time()
     cmd = [self.docker_binary(), 'run',
            '-v', '{0}:/input_images'.format(input_dir),
