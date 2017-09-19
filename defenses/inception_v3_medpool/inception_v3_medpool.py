@@ -521,7 +521,7 @@ def inception_v3(inputs,
             #    aux_logits, [5, 5], stride=3, padding='VALID',
             #    scope='AvgPool_1a_5x5')
             aux_logits = tf_median_pool(
-                aux_logits, [5, 5], stride=3, padding='VALID')
+                aux_logits, [5, 5], strides=3, padding='VALID')
             aux_logits = slim.conv2d(aux_logits, depth(128), [1, 1],
                                      scope='Conv2d_1b_1x1')
 
