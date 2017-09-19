@@ -102,7 +102,7 @@ def inception_v3_base(inputs,
   with tf.variable_scope(scope, 'InceptionV3', [inputs]):
     with slim.arg_scope([slim.conv2d, slim.max_pool2d, slim.avg_pool2d,
                          tf_median_pool],
-                        stride=1, padding='VALID'):
+                        padding='VALID'):
       # 299 x 299 x 3
       end_point = 'Conv2d_1a_3x3'
       net = slim.conv2d(inputs, depth(32), [3, 3], stride=1, scope=end_point)
@@ -146,7 +146,7 @@ def inception_v3_base(inputs,
     # Inception blocks
     with slim.arg_scope([slim.conv2d, slim.max_pool2d, slim.avg_pool2d,
                          tf_median_pool],
-                        stride=1, padding='SAME'):
+                        padding='SAME'):
       # mixed: 35 x 35 x 256.
       end_point = 'Mixed_5b'
       with tf.variable_scope(end_point):
@@ -514,7 +514,7 @@ def inception_v3(inputs,
       # Auxiliary Head logits
       if create_aux_logits:
         with slim.arg_scope([slim.conv2d, slim.max_pool2d, slim.avg_pool2d],
-                            stride=1, padding='SAME'):
+                            padding='SAME'):
           aux_logits = end_points['Mixed_6e']
           with tf.variable_scope('AuxLogits'):
             #aux_logits = slim.avg_pool2d(
