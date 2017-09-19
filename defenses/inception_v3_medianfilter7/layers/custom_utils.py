@@ -5,6 +5,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import math
+
 import tensorflow as tf
 from tensorflow.contrib.framework.python.ops import add_arg_scope
 
@@ -66,8 +68,8 @@ def tf_median_pool(x, kernel, strides=[1,1], padding='SAME', keep_edges=None):
     if keep_edges is None and padding is 'SAME':
         in_height = int(x.shape[1])
         in_width = int(x.shape[2])
-        out_height = ceil(float(in_height) / float(strides[0]))
-        out_width  = ceil(float(in_width) / float(strides[1]))
+        out_height = math.ceil(float(in_height) / float(strides[0]))
+        out_width  = math.ceil(float(in_width) / float(strides[1]))
         if (in_height % strides[0] == 0):
             pad_along_height = max(kernel[0] - strides[0], 0)
         else:
@@ -81,10 +83,10 @@ def tf_median_pool(x, kernel, strides=[1,1], padding='SAME', keep_edges=None):
         pad_left = pad_along_width // 2
         pad_right = pad_along_width - pad_left
 
-        keep_edges = [[int(ceil(pad_top / strides[0])),
-                       int(ceil(pad_bottom / strides[0]))],
-                      [int(ceil(pad_left / strides[1])),
-                       int(ceil(pad_right / strides[0]))]]
+        keep_edges = [[int(math.ceil(pad_top / strides[0])),
+                       int(math.ceil(pad_bottom / strides[0]))],
+                      [int(math.ceil(pad_left / strides[1])),
+                       int(math.ceil(pad_right / strides[0]))]]
 
     elif not keep_edges:
         keep_edges = []
