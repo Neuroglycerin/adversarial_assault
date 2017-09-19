@@ -56,8 +56,8 @@ def tf_median_pool(x, kernel, strides=[1,1], padding='SAME', keep_edges=None):
     if keep_edges is None and padding is 'SAME':
         in_height = x.shape[1]
         in_width = x.shape[2]
-        out_height = ceil(float(in_height) / float(strides[0]))
-        out_width  = ceil(float(in_width) / float(strides[1]))
+        out_height = math.ceil(float(in_height) / float(strides[0]))
+        out_width  = math.ceil(float(in_width) / float(strides[1]))
         if (in_height % strides[0] == 0):
             pad_along_height = max(kernel[0] - strides[0], 0)
         else:
