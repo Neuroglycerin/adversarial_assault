@@ -239,7 +239,7 @@ def inception_v3_base(inputs,
         with tf.variable_scope('Branch_2'):
           #branch_2 = slim.max_pool2d(net, [3, 3], stride=2, padding='VALID',
           #                           scope='MaxPool_1a_3x3')
-          branch_2 = tf_median_pool(branch_2, [3, 3], strides=[2, 2],
+          branch_2 = tf_median_pool(net, [3, 3], strides=[2, 2],
                                     padding='VALID')
         net = tf.concat(axis=3, values=[branch_0, branch_1, branch_2])
       end_points[end_point] = net
@@ -386,7 +386,7 @@ def inception_v3_base(inputs,
         with tf.variable_scope('Branch_2'):
           #branch_2 = slim.max_pool2d(net, [3, 3], stride=2, padding='VALID',
           #                           scope='MaxPool_1a_3x3')
-          branch_2 = tf_median_pool(branch_2, [3, 3], strides=[2, 2],
+          branch_2 = tf_median_pool(net, [3, 3], strides=[2, 2],
                                     padding='VALID')
         net = tf.concat(axis=3, values=[branch_0, branch_1, branch_2])
       end_points[end_point] = net
