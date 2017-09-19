@@ -164,7 +164,7 @@ def inception_v3_base(inputs,
                                  scope='Conv2d_0c_3x3')
         with tf.variable_scope('Branch_3'):
           # branch_3 = slim.avg_pool2d(net, [3, 3], scope='AvgPool_0a_3x3')
-          branch_3 = tf.median_pool(net, [3, 3])
+          branch_3 = tf_median_pool(net, [3, 3])
           branch_3 = slim.conv2d(branch_3, depth(32), [1, 1],
                                  scope='Conv2d_0b_1x1')
         net = tf.concat(axis=3, values=[branch_0, branch_1, branch_2, branch_3])
