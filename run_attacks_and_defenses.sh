@@ -13,6 +13,13 @@ DATASET_DIR="${SCRIPT_DIR}/dataset/images"
 DATASET_METADATA_FILE="${SCRIPT_DIR}/dataset/dev_dataset.csv"
 MAX_EPSILON=16
 
+mkdir -p "${ATTACKS_DIR}"
+mkdir -p "${TARGETED_ATTACKS_DIR}"
+mkdir -p "${DEFENSES_DIR}"
+touch "${ATTACKS_DIR}/placeholder"
+touch "${TARGETED_ATTACKS_DIR}/placeholder"
+touch "${DEFENSES_DIR}/placeholder"
+
 # Prepare working directory and copy all necessary files.
 # In particular copy attacks defenses and dataset, so originals won't
 # be overwritten.
