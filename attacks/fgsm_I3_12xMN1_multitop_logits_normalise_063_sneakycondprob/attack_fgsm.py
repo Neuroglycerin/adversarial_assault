@@ -356,9 +356,8 @@ def main(_):
         class_is_next_highest = tf.logical_and(
             tf.concat([vec_true, class_is_before_threshold[:, :-1]], -1),
             tf.logical_not(class_is_before_threshold))
-        index_next_highest = tf.argmax(tf.cast(class_is_next_highest, tf.uint8),
-                                       axis=-1,
-                                       output_type=tf.int32)
+        index_next_highest = tf.argmax(tf.cast(class_is_next_highest, tf.uint8), axis=-1)
+        index_next_highest = tf.cast(index_next_highest, tf.int32)
         index_very_highest = sort_indices[:, 0]
 
         target_indices = tf.stack((index_very_highest, index_next_highest), axis=-1)
