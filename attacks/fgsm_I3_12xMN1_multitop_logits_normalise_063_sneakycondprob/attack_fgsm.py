@@ -360,19 +360,17 @@ def main(_):
         index_next_highest = tf.cast(index_next_highest, tf.int32)
         index_very_highest = sort_indices[:, 0]
 
-        target_indices = tf.stack((index_very_highest, index_next_highest), axis=-1)
-        target_indices += tf.expand_dims(tf.range(FLAGS.batch_size), 1)
-
         target_weights = tf.stack(
             (tf.zeros([FLAGS.batch_size], dtype=logits.dtype),
              tf.ones([FLAGS.batch_size], dtype=logits.dtype)),
             axis=-1)
 
-        subset_logits = tf.gather_nd(
-            tf.expand_dims(tf.reshape(target_indices, [-1]), -1),
-            tf.reshape(logits, [-1]),
-            [FLAGS.batch_size * 2])
-        subset_logits = tf.reshape(subset_logits, [FLAGS.batch_size, 2])
+        target_indices = tf.stack((index_very_highest, index_next_highest), axis=-1)
+        batch_indices = tf.range(FLAGS.batch_size)
+        batch_indices = tf.stack((batch_indices, batch_indices), axis=-1)
+        target_indices = tf.stack((batch_indices, target_indices), axis=-1)
+
+        subset_logits = tf.gather_nd(logits, target_indices)
 
         cross_entropy -= tf.losses.softmax_cross_entropy(target_weights, subset_logits)
 
