@@ -353,7 +353,7 @@ def main(_):
         vec_false = tf.zeros([FLAGS.batch_size, 1], dtype=tf.bool)
         # Was the one before me before the threshold?
         # And am I after the threshold?
-        class_is_next_highest = tf.concat([vec_true, class_is_before_threshold[:, :-1]], -1)
+        class_is_next_highest = tf.concat([vec_true, class_is_before_threshold[:, :-1]], -1) \
                                 and not class_is_before_threshold
         target_weights = tf.scatter_nd(tf.expand_dims(tf.reshape(sort_indices_offset, [-1]), -1),
                                 tf.reshape(target_weights, [-1]),
