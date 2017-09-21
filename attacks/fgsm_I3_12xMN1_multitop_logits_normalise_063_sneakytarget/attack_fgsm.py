@@ -356,11 +356,11 @@ def main(_):
         class_is_next_highest = tf.logical_and(
             tf.concat([vec_true, class_is_before_threshold[:, :-1]], -1),
             tf.logical_not(class_is_before_threshold))
+        class_is_next_highest = tf.cast(class_is_next_highest, logits.dtype)
         target_weights = tf.scatter_nd(tf.expand_dims(tf.reshape(sort_indices_offset, [-1]), -1),
                                 tf.reshape(class_is_next_highest, [-1]),
                                 [FLAGS.batch_size * num_classes])
         target_weights = tf.reshape(target_weights, logits.shape)
-        target_weights = tf.cast(target_weights, logits.dtype)
 
         cross_entropy -= tf.losses.softmax_cross_entropy(target_weights, logits)
 
