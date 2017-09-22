@@ -41,6 +41,16 @@ def random_contrast(images, lower, upper, seed=None):
 
 def adjust_hue(image, theta, name=None):
     image = colorspace_transform.tf_rgb_to_flab(image)
+
+    # Prepend a dimension to image, incase there is more than one of them
+    # This is because we might want to apply a different theta to each
+    # in the batch.
+    image = tf.expand_dims(image, 0)
+
+    # Add extra dimensions to theta, so it is the same across 2D space
+    theta = tf.expand_dims(tf.expand_dims(theta, axis=-1), axis=-1)
+
+    # Assemble the transformation matrix
     ones = tf.ones_like(theta)
     zeros = tf.zeros_like(theta)
     M = tf.stack(
@@ -48,7 +58,23 @@ def adjust_hue(image, theta, name=None):
              tf.stack([zeros, tf.cos(theta), -tf.sin(theta)], axis=-1),
              tf.stack([zeros, tf.sin(theta), tf.cos(theta)], axis=-1)],
             axis=-2)
-    image = tf.matmul(image, M)
+
+    # Ensure theta has correct dimensionality
+    n_dims = len(image.shape) - 2
+    for i_dim in range(n_dims):
+        M = tf.expand_dims(M, axis=0)
+
+    # Convolve with our rotation filter
+    image = tf.nn.convolution (
+        input=image,
+        filter=M,
+        padding='SAME',
+        name='adjust_hue')
+
+    # Remove the dimension we added as a precaution earlier
+    image = tf.squeeze(image, 0)
+
+    # Convert back to RGB space
     image = colorspace_transform.tf_flab_to_rgb(image)
     return image
 
