@@ -174,7 +174,7 @@ class ModelLoader():
         return logits
 
 
-    def restore(self):
+    def restore(self, sess):
         var_dict = {(self._scope_in_checkpoint + v.op.name.lstrip(self.scope_to_use)): v
             for v in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES,
                                        scope=self.scope_to_use)}

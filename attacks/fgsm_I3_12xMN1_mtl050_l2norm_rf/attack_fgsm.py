@@ -163,7 +163,7 @@ def main(_):
         with tf.Session() as sess:
 
             for model in model_stack.models:
-                model.restore()
+                model.restore(sess)
 
             for filenames, images in load_images(FLAGS.input_dir, batch_shape):
                 adv_images = sess.run(x_adv, feed_dict={x_input: images})
