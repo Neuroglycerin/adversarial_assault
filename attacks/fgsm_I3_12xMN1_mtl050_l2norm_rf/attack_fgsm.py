@@ -138,6 +138,8 @@ def main(_):
         for model in model_stack.models:
             logits += model.get_logits()
 
+        logits /= len(model_stack.models)
+
         preds = tf.nn.softmax(logits)
         preds = preds / tf.reduce_sum(preds, axis=-1, keep_dims=True)
 

@@ -161,6 +161,7 @@ class ModelLoader():
 
         if 'AuxLogits' in end_points:
             logits += end_points['AuxLogits']
+            logits /= 2
 
         if needs_manual_squeeze:
             logits = tf.squeeze(logits, axis=(1, 2))
