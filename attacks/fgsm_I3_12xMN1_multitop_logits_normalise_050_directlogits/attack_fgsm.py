@@ -347,7 +347,7 @@ def main(_):
                                 [FLAGS.batch_size * num_classes])
         weights = tf.reshape(weights, preds.shape)
 
-        weighted_logits = tf.reduce_sum(weights * logits)
+        weighted_logits = -tf.reduce_sum(weights * logits)
 
         scaled_signed_grad = eps * tf.sign(tf.gradients(weighted_logits, x_input)[0])
         x_adv = tf.stop_gradient(x_input + scaled_signed_grad)
