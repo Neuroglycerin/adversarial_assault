@@ -60,7 +60,7 @@ def model_name_to_scope(model_name):
     if model_name in model_name_to_default_scope_map:
         return model_name_to_default_scope_map[model_name]
     parts = model_name.split('_')
-    for i in range(parts):
+    for i in range(1, len(parts)):
         partial_model_name = '_'.join(parts[:-i])
         if partial_model_name in model_name_to_default_scope_map:
             return model_name_to_default_scope_map[partial_model_name]
