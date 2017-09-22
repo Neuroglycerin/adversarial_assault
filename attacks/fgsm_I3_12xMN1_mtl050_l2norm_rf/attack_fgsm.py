@@ -11,7 +11,6 @@ import numpy as np
 from PIL import Image
 
 import tensorflow as tf
-slim = tf.contrib.slim
 
 import model_loader
 
@@ -130,9 +129,6 @@ def main(_):
         model_stack.add('mobilenet_v1_050', 'mobilenet_v1_0.50_128.ckpt', im_size=128)
 
         x_adv = x_input
-        all_logits = []
-        all_preds = 0
-        n_preds = 0
 
         logits = 0
         for model in model_stack.models:
