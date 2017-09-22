@@ -63,6 +63,10 @@ def random_hue(image, max_theta, seed=None):
 
 def adjust_saturation(image, saturation_factor, name=None):
     image = colorspace_transform.tf_rgb_to_flab(image)
+    # Add extra dimensions to the factor, so it is the same across 2D space
+    saturation_factor = tf.expand_dims(saturation_factor, axis=-1)
+    if len(saturation_factor.shape) < len(image.shape) - 1:
+        saturation_factor = tf.expand_dims(saturation_factor, axis=-1)
     ones = tf.ones_like(saturation_factor)
     M = tf.stack([ones, saturation_factor, saturation_factor], axis=-1)
     image *= M
