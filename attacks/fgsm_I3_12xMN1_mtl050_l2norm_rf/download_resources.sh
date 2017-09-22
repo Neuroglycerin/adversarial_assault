@@ -8,8 +8,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd "${SCRIPT_DIR}"
 
-if [ ! -e "tensorflow-slim" ]; then
-    cp ../../tensorflow-slim ./
+if [ ! -d "tensorflow-slim" ]; then
+    cp -r ../../tensorflow-slim ./
 fi
 cd tensorflow-slim
 git pull
