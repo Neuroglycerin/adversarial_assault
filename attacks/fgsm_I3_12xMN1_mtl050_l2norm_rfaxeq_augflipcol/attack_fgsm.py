@@ -104,12 +104,10 @@ def augment_single(image):
     image = tf.image.random_flip_left_right(image)
     # Randomly distort the colors. There are 4 ways to do it.
     fast_mode = False
-    image = image * 0.5 + 0.5
     image = inception_preprocessing.apply_with_random_selector(
         image,
         lambda x, ordering: distort_color(x, ordering, fast_mode),
         num_cases=4)
-    image = image * 2.0 - 1.0
     return image
 
 
@@ -134,37 +132,37 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
   with tf.name_scope(scope, 'distort_color', [image]):
     if fast_mode:
       if color_ordering == 0:
-        image = tf.image.random_brightness(image, max_delta=32. / 255.)
-        #image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
+        image = tf.image.random_brightness(image, max_delta=64. / 255.)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
       else:
-        #image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
-        image = tf.image.random_brightness(image, max_delta=32. / 255.)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
+        image = tf.image.random_brightness(image, max_delta=64. / 255.)
     else:
       if color_ordering == 0:
-        image = tf.image.random_brightness(image, max_delta=32. / 255.)
-        #image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
-        #image = tf.image.random_hue(image, max_delta=0.2)
+        image = tf.image.random_brightness(image, max_delta=64. / 255.)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
+        image = image_utils.random_hue(image, max_theta=0.785)
         image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
       elif color_ordering == 1:
-        #image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
-        image = tf.image.random_brightness(image, max_delta=32. / 255.)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
+        image = tf.image.random_brightness(image, max_delta=64. / 255.)
         image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
-        #image = tf.image.random_hue(image, max_delta=0.2)
+        image = image_utils.random_hue(image, max_theta=0.785)
       elif color_ordering == 2:
         image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
-        #image = tf.image.random_hue(image, max_delta=0.2)
-        image = tf.image.random_brightness(image, max_delta=32. / 255.)
-        #image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
+        image = image_utils.random_hue(image, max_theta=0.785)
+        image = tf.image.random_brightness(image, max_delta=64. / 255.)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
       elif color_ordering == 3:
-        #image = tf.image.random_hue(image, max_delta=0.2)
-        #image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
+        image = image_utils.random_hue(image, max_theta=0.785)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
         image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
-        image = tf.image.random_brightness(image, max_delta=32. / 255.)
+        image = tf.image.random_brightness(image, max_delta=64. / 255.)
       else:
         raise ValueError('color_ordering must be in [0, 3]')
 
     # The random_* ops do not necessarily clamp.
-    return tf.clip_by_value(image, 0.0, 1.0)
+    return tf.clip_by_value(image, -1.0, 1.0)
 
 
 def augment_batch(x):
