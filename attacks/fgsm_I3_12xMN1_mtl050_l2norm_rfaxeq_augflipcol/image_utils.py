@@ -61,7 +61,8 @@ def random_hue(image, max_theta, seed=None):
 
 def adjust_saturation(image, saturation_factor, name=None):
     image = colorspace_transform.tf_rgb_to_flab(image)
-    M = [1, saturation_factor, saturation_factor]
+    M = [1.0, saturation_factor, saturation_factor]
+    M = tf.cast(M, image.dtype)
     image *= M
     image = colorspace_transform.tf_flab_to_rgb(image)
     return image
