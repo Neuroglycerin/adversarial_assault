@@ -48,7 +48,9 @@ def adjust_hue(image, theta, name=None):
     image = tf.expand_dims(image, 0)
 
     # Add extra dimensions to theta, so it is the same across 2D space
-    theta = tf.expand_dims(tf.expand_dims(theta, axis=-1), axis=-1)
+    theta = tf.expand_dims(theta, axis=-1)
+    if len(theta.shape) < len(image.shape) - 1:
+        theta = tf.expand_dims(theta, axis=-1)
 
     # Assemble the transformation matrix
     ones = tf.ones_like(theta)
@@ -61,7 +63,7 @@ def adjust_hue(image, theta, name=None):
 
     # Ensure theta has correct dimensionality
     n_dims = len(image.shape) - 2
-    for i_dim in range(n_dims):
+    for i_dim in range(n_dims - len(M.shape) + 2):
         M = tf.expand_dims(M, axis=0)
 
     # Convolve with our rotation filter
