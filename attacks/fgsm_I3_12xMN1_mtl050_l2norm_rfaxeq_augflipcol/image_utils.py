@@ -22,8 +22,8 @@ def random_contrast(images, lower, upper, seed=None):
         shape = [1]
     else:
         shape = image.shape[:-3]
-    contrast_factor = random_uniform(shape,
-                                     minval=lower,
-                                     maxval=uupper,
-                                     seed=seed)
+    contrast_factor = tf.random_uniform(shape,
+                                        minval=lower,
+                                        maxval=upper,
+                                        seed=seed)
     return adjust_contrast(images, contrast_factor)
