@@ -8,7 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd "${SCRIPT_DIR}"
 
-if [ -d "tensorflow-slim" ]; then
+if [ -d "slim" ]; then
     rm -rf slim
 fi
 cp -r ../../tensorflow-slim ./slim
