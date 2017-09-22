@@ -41,11 +41,13 @@ def random_contrast(images, lower, upper, seed=None):
 
 def adjust_hue(image, theta, name=None):
     image = colorspace_transform.tf_rgb_to_flab(image)
+    ones = tf.ones_like(theta)
+    zeros = tf.zeros_like(theta)
     M = tf.stack(
-            [tf.constant([1.0, 0.0, 0.0]),
-             tf.stack([0.0, tf.cos(theta), -tf.sin(theta)]),
-             tf.stack([0.0, tf.sin(theta), tf.cos(theta)])],
-            axis=0)
+            [tf.stack([ones, zeros, zeros], axis=-1),
+             tf.stack([zeros, tf.cos(theta), -tf.sin(theta)], axis=-1),
+             tf.stack([zeros, tf.sin(theta), tf.cos(theta)], axis=-1)],
+            axis=-2)
     image = tf.matmul(image, M)
     image = colorspace_transform.tf_flab_to_rgb(image)
     return image
