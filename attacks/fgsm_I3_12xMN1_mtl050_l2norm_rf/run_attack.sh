@@ -14,7 +14,7 @@ INPUT_DIR=$1
 OUTPUT_DIR=$2
 MAX_EPSILON=$3
 
-pip install -e tensorflow-slim --user
+pip install -e slim --user
 
 python attack_fgsm.py \
   --input_dir="${INPUT_DIR}" \
