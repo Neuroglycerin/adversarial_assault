@@ -97,6 +97,17 @@ def save_images(images, filenames, output_dir):
             Image.fromarray(img).save(f, format='PNG')
 
 
+def augment_single(x):
+    x = tf.image.random_flip_left_right(x)
+    return x
+
+
+def augment_batch(x):
+    images = tf.unstack(x, axis=0)
+    images = [augment_single(image) for image in images]
+    return tf.stack(images, axis=0)
+
+
 def main(_):
     # Images for inception classifier are normalized to be in [-1, 1] interval,
     # eps is a difference between pixels so it should be in [0, 2] interval.
@@ -133,7 +144,7 @@ def main(_):
         logits_list = []
         for model in model_stack.models:
             logits_list += model.get_logits(x_adv,
-                                            augmentation_fn=tf.image.random_flip_left_right)
+                                            augmentation_fn=augment_batch)
         logits = tf.reduce_mean(tf.stack(logits_list, axis=-1), axis=-1)
 
         preds = tf.nn.softmax(logits)
