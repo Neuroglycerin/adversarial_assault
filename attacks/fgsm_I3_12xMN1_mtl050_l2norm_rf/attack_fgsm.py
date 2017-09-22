@@ -132,8 +132,7 @@ def main(_):
 
         logits = 0
         for model in model_stack.models:
-            logits += model.get_logits()
-
+            logits += model.get_logits(x_adv)
         logits /= len(model_stack.models)
 
         preds = tf.nn.softmax(logits)
