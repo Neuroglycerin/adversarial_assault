@@ -103,10 +103,12 @@ def augment_single(image):
     image = tf.image.random_flip_left_right(image)
     # Randomly distort the colors. There are 4 ways to do it.
     fast_mode = False
+    image = image * 0.5 + 0.5
     image = inception_preprocessing.apply_with_random_selector(
         image,
         lambda x, ordering: inception_preprocessing.distort_color(x, ordering, fast_mode),
         num_cases=4)
+    image = image * 2.0 - 1.0
     return image
 
 
