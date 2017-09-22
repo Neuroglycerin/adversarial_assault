@@ -6,7 +6,9 @@ from __future__ import print_function
 
 import tensorflow as tf
 
-from slim import nets_factory
+import slim
+
+nets_factory = slim.nets_factory
 
 
 model_name_to_default_scope_map = {
