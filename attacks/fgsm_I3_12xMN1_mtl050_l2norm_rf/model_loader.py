@@ -190,7 +190,7 @@ class ModelLoaderStack():
     def add(self, model_name, checkpoint_path, scope_to_use=None, **kwargs):
 
         if scope_to_use is None:
-            scope_to_use = 'Model{}/{}'.format(
+            scope_to_use = 'Model{}_{}'.format(
                 self.num_models_added, model_name_to_scope(model_name)
                 )
 
