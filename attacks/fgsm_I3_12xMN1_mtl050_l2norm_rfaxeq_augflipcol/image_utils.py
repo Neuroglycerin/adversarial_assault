@@ -42,15 +42,15 @@ def random_contrast(images, lower, upper, seed=None):
 def adjust_hue(image, theta, name=None):
     image = colorspace_transform.tf_rgb_to_flab(image)
 
-    # Prepend a dimension to image, incase there is more than one of them
-    # This is because we might want to apply a different theta to each
-    # in the batch.
-    image = tf.expand_dims(image, 0)
-
     # Add extra dimensions to theta, so it is the same across 2D space
     theta = tf.expand_dims(theta, axis=-1)
     if len(theta.shape) < len(image.shape) - 1:
         theta = tf.expand_dims(theta, axis=-1)
+
+    # Prepend a dimension to image, incase there is more than one of them
+    # This is because we might want to apply a different theta to each
+    # in the batch.
+    image = tf.expand_dims(image, axis=0)
 
     # Assemble the transformation matrix
     ones = tf.ones_like(theta)
