@@ -18,7 +18,7 @@ def adjust_contrast(images, contrast_factor):
 
 
 def random_contrast(images, lower, upper, seed=None):
-    if images.rank <= 3:
+    if tf.rank(images) <= 3:
         shape = [1]
     else:
         shape = image.shape[:-3]
