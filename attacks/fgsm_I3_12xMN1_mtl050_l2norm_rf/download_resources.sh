@@ -10,7 +10,6 @@ cd "${SCRIPT_DIR}"
 
 if [ ! -e "tensorflow-slim" ]; then
     cp ../../tensorflow-slim ./
-    pip install -e tensorflow-slim
 fi
 cd tensorflow-slim
 git pull
