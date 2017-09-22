@@ -15,7 +15,7 @@ model_name_to_default_scope_map = {
     'deadversiser_noop': 'noop',
     'deadversiser_v0': 'deadversarialiser',
     'deadversiser_v1': 'deadversarialiser',
-    'deadversiser_v2': 'deadversarialiser,
+    'deadversiser_v2': 'deadversarialiser',
     'overfeat': 'overfeat',
     'vgg_a': 'vgg_a',
     'vgg_16': 'vgg_16',
