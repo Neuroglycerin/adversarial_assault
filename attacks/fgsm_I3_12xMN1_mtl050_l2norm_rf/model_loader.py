@@ -35,7 +35,7 @@ model_name_to_default_scope_map = {
     'resnet_v2_152': 'resnet_v2_152',
     'resnet_v2_200': 'resnet_v2_200',
     'mobilenet_v1': 'MobilenetV1',
-    'mobilenet_v1x': 'MobilenetV1,
+    'mobilenet_v1x': 'MobilenetV1',
     'mobilenet_v1_multiscale': 'MobilenetV1Multiscale',
     'mobilenet_v1_multiscale2': 'MobilenetV1',
     'mobilenet_v1_lahrelu': 'MobilenetV1',
@@ -46,13 +46,13 @@ model_name_to_default_scope_map = {
 
 
 model_groups_which_need_manual_squeeze = [
-    'mobilenet,
-    'resnet'
+    'mobilenet',
+    'resnet',
     ]
 
 model_groups_which_take_1000_classes = [
     'resnet',
-    'vgg'
+    'vgg',
     ]
 
 
