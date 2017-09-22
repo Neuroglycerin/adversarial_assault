@@ -148,7 +148,7 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
       elif color_ordering == 1:
         #image = tf.image.random_saturation(image, lower=0.5, upper=1.5)
         image = tf.image.random_brightness(image, max_delta=32. / 255.)
-        image = tf.image.random_contrast(image, lower=0.5, upper=1.5)
+        image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
         #image = tf.image.random_hue(image, max_delta=0.2)
       elif color_ordering == 2:
         image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
