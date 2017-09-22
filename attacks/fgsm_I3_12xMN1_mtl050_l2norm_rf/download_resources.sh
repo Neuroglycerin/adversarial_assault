@@ -9,9 +9,9 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${SCRIPT_DIR}"
 
 if [ -d "tensorflow-slim" ]; then
-    rm -rf tensorflow-slim
+    rm -rf slim
 fi
-cp -r ../../tensorflow-slim ./
+cp -r ../../tensorflow-slim ./slim
 
 
 if [ ! -e "inception_v3.ckpt" ]; then
