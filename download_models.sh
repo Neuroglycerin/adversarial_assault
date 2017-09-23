@@ -38,7 +38,7 @@ fi
 mkdir -p xception
 if [ ! -e "xception/xception_weights_tf_dim_ordering_tf_kernels.h5" ]; then
     wget https://github.com/fchollet/deep-learning-models/releases/download/v0.4/xception_weights_tf_dim_ordering_tf_kernels.h5
-    mv xception/xception_weights_tf_dim_ordering_tf_kernels.h5 xception
+    mv xception_weights_tf_dim_ordering_tf_kernels.h5 xception
 fi
 
 
