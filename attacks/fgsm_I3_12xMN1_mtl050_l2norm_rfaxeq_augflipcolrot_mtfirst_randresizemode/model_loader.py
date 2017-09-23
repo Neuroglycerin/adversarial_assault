@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+from tensorflow.python.ops import control_flow_ops
 
 from slim.nets import nets_factory
 
@@ -139,7 +140,15 @@ class ModelLoader():
 
         if augmentation_fn is not None:
             x = augmentation_fn(x)
-        x = tf.image.resize_images(x, (self.im_size, self.im_size), resize_mode)
+
+        func = lambda y, method: tf.image.resize_images(
+            y, (self.im_size, self.im_size), method)
+
+        # Resize with potentially random resize_mode
+        num_cases = 4
+        x = control_flow_ops.merge([
+            func(control_flow_ops.switch(x, tf.equal(resize_mode, case))[1], case)
+            for case in range(num_cases)])[0]
 
         kwargs = {}
         needs_manual_squeeze = self._model_group in \
