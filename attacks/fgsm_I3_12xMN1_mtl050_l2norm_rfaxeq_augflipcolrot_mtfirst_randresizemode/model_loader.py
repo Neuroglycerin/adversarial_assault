@@ -145,10 +145,9 @@ class ModelLoader():
             y, (self.im_size, self.im_size), method)
 
         # Resize with potentially random resize_mode
-        num_cases = 3
-        case_map = lambda case: 3 if case is 2 else case
+        num_cases = 2
         x = control_flow_ops.merge([
-            func(control_flow_ops.switch(x, tf.equal(resize_mode, case))[1], case_map(case))
+            func(control_flow_ops.switch(x, tf.equal(resize_mode, case))[1], case)
             for case in range(num_cases)])[0]
 
         kwargs = {}
