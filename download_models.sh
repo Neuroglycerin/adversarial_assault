@@ -69,9 +69,9 @@ if [ ! -e "inception_v3/inception_v3.ckpt" ]; then
 fi
 mkdir -p inception_v4
 if [ ! -e "inception_v4/inception_v4.ckpt" ]; then
-    wget http://download.tensorflow.org/models/inception_v4_2016_08_28.tar.gz
-    tar -xvzf inception_v4_2016_08_28.tar.gz -C inception_v4
-    rm inception_v4_2016_08_28.tar.gz
+    wget http://download.tensorflow.org/models/inception_v4_2016_09_09.tar.gz
+    tar -xvzf inception_v4_2016_09_09.tar.gz -C inception_v4
+    rm inception_v4_2016_09_09.tar.gz
 fi
 
 #------------------------------------------------------------------------------
@@ -107,21 +107,21 @@ if [ ! -e "resnet_v1_152/resnet_v1_152.ckpt" ]; then
 fi
 mkdir -p resnet_v2_50
 if [ ! -e "resnet_v2_50/resnet_v2_50.ckpt" ]; then
-    wget http://download.tensorflow.org/models/resnet_v2_50_2016_08_28.tar.gz
-    tar -xvzf resnet_v2_50_2016_08_28.tar.gz -C resnet_v2_50
-    rm resnet_v2_50_2016_08_28.tar.gz
+    wget http://download.tensorflow.org/models/resnet_v2_50_2017_04_14.tar.gz
+    tar -xvzf resnet_v2_50_2017_04_14.tar.gz -C resnet_v2_50
+    rm resnet_v2_50_2017_04_14.tar.gz
 fi
 mkdir -p resnet_v2_101
 if [ ! -e "resnet_v2_101/resnet_v2_101.ckpt" ]; then
-    wget http://download.tensorflow.org/models/resnet_v2_101_2016_08_28.tar.gz
-    tar -xvzf resnet_v2_101_2016_08_28.tar.gz -C resnet_v2_101
-    rm resnet_v2_101_2016_08_28.tar.gz
+    wget http://download.tensorflow.org/models/resnet_v2_101_2017_04_14.tar.gz
+    tar -xvzf resnet_v2_101_2017_04_14.tar.gz -C resnet_v2_101
+    rm resnet_v2_101_2017_04_14.tar.gz
 fi
 mkdir -p resnet_v2_152
 if [ ! -e "resnet_v2_152/resnet_v2_152.ckpt" ]; then
-    wget http://download.tensorflow.org/models/resnet_v2_152_2016_08_28.tar.gz
-    tar -xvzf resnet_v2_152_2016_08_28.tar.gz -C resnet_v2_152
-    rm resnet_v2_152_2016_08_28.tar.gz
+    wget http://download.tensorflow.org/models/resnet_v2_152_2017_04_14.tar.gz
+    tar -xvzf resnet_v2_152_2017_04_14.tar.gz -C resnet_v2_152
+    rm resnet_v2_152_2017_04_14.tar.gz
 fi
 
 #------------------------------------------------------------------------------
