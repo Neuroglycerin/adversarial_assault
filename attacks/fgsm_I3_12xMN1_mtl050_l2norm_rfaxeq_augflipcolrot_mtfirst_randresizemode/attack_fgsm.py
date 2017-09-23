@@ -238,7 +238,7 @@ def main(_):
 
         logits_list = []
         for model in model_stack.models:
-            resize_mode = tf.random_uniform([], maxval=4, dtype=tf.int32)
+            resize_mode = tf.random_uniform([], maxval=3, dtype=tf.int32)
             logits_list += model.get_logits(x_adv,
                                             augmentation_fn=augment_batch,
                                             resize_mode=resize_mode)
