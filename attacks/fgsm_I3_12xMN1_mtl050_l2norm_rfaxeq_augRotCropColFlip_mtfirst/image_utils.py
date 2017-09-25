@@ -9,11 +9,13 @@ import tensorflow as tf
 from slim.layers import colorspace_transform
 
 
-def _uniform_random_per_image(input_shape, lower, upper, seed=None):
+def _uniform_random_per_image(input_shape, lower, upper, dtype=tf.float32,
+                              seed=None):
     output_shape = input_shape[:-3]
     outputs = tf.random_uniform(output_shape,
                                 minval=lower,
                                 maxval=upper,
+                                dtype=dtype,
                                 seed=seed)
     return outputs
 
