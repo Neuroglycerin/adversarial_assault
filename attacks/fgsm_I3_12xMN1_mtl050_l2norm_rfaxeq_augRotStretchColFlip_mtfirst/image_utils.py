@@ -110,14 +110,14 @@ def random_saturation(image, lower, upper, seed=None):
     return adjust_saturation(image, saturation_factor)
 
 
-def stetch(image, aspect_ratio, dim, offset=None):
+def stretch(image, aspect_ratio, dim, offset=None):
 
     bbox_begin = [0] * len(image.shape)
     bbox_size = image.shape
 
     bbox_size[dim] = int(bbox_size[dim] * aspect_ratio)
     if offset is None:
-        offset = int(image.shape[dim] - bbox_size[dim] / 2)
+        offset = int((image.shape[dim] - bbox_size[dim]) / 2)
     bbox_begin[dim] = offset
 
     image = tf.slice(image, bbox_begin, bbox_size)
@@ -133,9 +133,13 @@ def random_stretch(image, lower, seed=None):
     random_dim = tf.random_uniform([], maxval=2, dtype=tf.int32)
 
     num_cases = 2
-    image = control_flow_ops.merge([
-        func(control_flow_ops.switch(image, tf.equal(random_dim, case))[1],
-             case + len(image.shape) - 3)
+
+    stretch_dim_0_fn = lambda x: stretch(x, aspect_ratio, 0)
+
+    image = control_flow_ops.case([
+        stretch(control_flow_ops.switch(image, tf.equal(random_dim, case))[1],
+                aspect_ratio,
+                case + len(image.shape) - 3)
         for case in range(num_cases)])[0]
 
     return image
