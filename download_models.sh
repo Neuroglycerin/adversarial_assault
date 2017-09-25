@@ -193,10 +193,10 @@ if [ ! -e "mobilenet_v1_075_128/mobilenet_v1_0.75_128.ckpt.data-00000-of-00001" 
     rm mobilenet_v1_0.75_128_2017_06_14.tar.gz
 fi
 
-mkdir -p mobilenet_v1_050_244
-if [ ! -e "mobilenet_v1_050_244/mobilenet_v1_0.50_224.ckpt.data-00000-of-00001" ]; then
+mkdir -p mobilenet_v1_050_224
+if [ ! -e "mobilenet_v1_050_224/mobilenet_v1_0.50_224.ckpt.data-00000-of-00001" ]; then
     wget http://download.tensorflow.org/models/mobilenet_v1_0.50_224_2017_06_14.tar.gz
-    tar -xvzf mobilenet_v1_0.50_224_2017_06_14.tar.gz -C mobilenet_v1_050_244
+    tar -xvzf mobilenet_v1_0.50_224_2017_06_14.tar.gz -C mobilenet_v1_050_224
     rm mobilenet_v1_0.50_224_2017_06_14.tar.gz
 fi
 mkdir -p mobilenet_v1_050_192
