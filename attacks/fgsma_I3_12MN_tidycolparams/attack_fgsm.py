@@ -100,7 +100,7 @@ def save_images(images, filenames, output_dir):
             Image.fromarray(img).save(f, format='PNG')
 
 
-def augment_single(image):
+def augment_single_pre_resize(image):
 
     # Rotate
     angle = tf.random_uniform([], minval=-10, maxval=10)
@@ -123,15 +123,8 @@ def augment_single(image):
         lambda x, ordering: distort_color(x, ordering, fast_mode),
         num_cases=4)
 
-    # Add some random noise to the image
-    unit_change = 2.0 / 255.0  # this level is equivalent to 1 utf8 change
-    dist = unit_change
-    noise = tf.random_uniform(
-        shape=tf.shape(image), minval=-dist, maxval=dist, dtype=image.dtype)
-    image = image + noise
-
-    # Clip pixels back to the appropriate range of values
-    return tf.clip_by_value(image, -1.0, 1.0)
+    # Note that we haven't clipped the output values yet!
+    return image
 
 
 def random_crop(image):
@@ -247,10 +240,23 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
     return image
 
 
-def augment_batch(x):
+def augment_batch_pre_resize(x):
     images = tf.unstack(x, axis=0)
-    images = [augment_single(image) for image in images]
+    images = [augment_single_pre_resize(image) for image in images]
     return tf.stack(images, axis=0)
+
+
+def augment_batch_post_resize(images):
+    # Add some random noise to the image
+    unit_change = 2.0 / 255.0  # this level is equivalent to 1 utf8 change
+    dist = unit_change
+    noise = tf.random_uniform(
+        shape=tf.shape(images), minval=-dist, maxval=dist, dtype=images.dtype)
+    images = images + noise
+
+    # Clip pixels back to the appropriate range of values
+    return tf.clip_by_value(images, -1.0, 1.0)
+
 
 
 def main(_):
@@ -316,9 +322,10 @@ def main(_):
 
         logits_list = []
         for model in model_stack.models:
-            logits_list += model.get_logits(x_adv,
-                                            pre_resize_fn=augment_batch,
-                                            post_resize_fn=None)
+            logits_list += model.get_logits(
+                x_adv,
+                pre_resize_fn=augment_batch_pre_resize,
+                post_resize_fn=augment_batch_post_resize)
         logits = tf.reduce_mean(tf.stack(logits_list, axis=-1), axis=-1)
 
         cross_entropy = tf.losses.softmax_cross_entropy(weights, logits)
