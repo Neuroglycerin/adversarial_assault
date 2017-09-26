@@ -103,12 +103,7 @@ def save_images(images, filenames, output_dir):
 def augment_single_pre_resize(image):
 
     # Rotate
-    angle = tf.random_uniform([], minval=-10, maxval=10)
-    image = tf.contrib.image.rotate(
-        image,
-        angle * math.pi / 180,
-        interpolation='BILINEAR'
-        )
+    image = random_rotate(image, max_angle=10)
 
     # Crop
     # image = random_crop(image)
@@ -124,6 +119,16 @@ def augment_single_pre_resize(image):
         num_cases=4)
 
     # Note that we haven't clipped the output values yet!
+    return image
+
+
+def random_rotate(image, max_angle=10):
+    angle = tf.random_uniform([], minval=-max_angle, maxval=max_angle)
+    image = tf.contrib.image.rotate(
+        image,
+        angle * math.pi / 180,
+        interpolation='BILINEAR'
+        )
     return image
 
 
