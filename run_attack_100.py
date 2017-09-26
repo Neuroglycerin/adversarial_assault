@@ -475,11 +475,11 @@ def compute_and_save_scores_and_ranking(attacks_output,
       attacks_output.sec_per_100_samples_targeted_attack[name])
   write_ranking(
       os.path.join(output_dir, 'duration_attack.csv'),
-      ['AttackName', 'DurationPer100Samples'], attack_names,
+      ['AttackName', 'DurationFor100Samples'], attack_names,
       attacks_duration)
   write_ranking(
       os.path.join(output_dir, 'duration_targeted_attack.csv'),
-      ['AttackName', 'DurationPer100Samples'], targeted_attack_names,
+      ['AttackName', 'DurationFor100Samples'], targeted_attack_names,
       targeted_attacks_duration)
 
 
