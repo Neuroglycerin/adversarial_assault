@@ -9,6 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+import math
 
 import numpy as np
 from scipy.misc import imread
@@ -41,7 +42,7 @@ tf.flags.DEFINE_integer(
     'batch_size', 16, 'How many images process at one time.')
 
 FLAGS = tf.flags.FLAGS
-devset_dir = 'comparison_images'
+
 
 def load_images(input_dir, batch_shape):
   """Read png images from input directory in batches.
@@ -61,9 +62,8 @@ def load_images(input_dir, batch_shape):
   idx = 0
   batch_size = batch_shape[0]
   for filepath in tf.gfile.Glob(os.path.join(input_dir, '*.png')):
-    #with tf.gfile.Open(filepath) as f:
-    #  image = imread(f, mode='RGB').astype(np.float) / 255.0
-    image = imread(filepath, mode='RGB').astype(np.float) / 255.0
+    with tf.gfile.Open(filepath) as f:
+      image = imread(f, mode='RGB').astype(np.float) / 255.0
     # Images for inception classifier are normalized to be in [-1, 1] interval.
     images[idx, :, :, :] = image * 2.0 - 1.0
     filenames.append(os.path.basename(filepath))
@@ -86,10 +86,12 @@ def main(_):
   with tf.Graph().as_default():
     # Prepare graph
     x_input = tf.placeholder(tf.float32, shape=batch_shape)
+    x_input_rotated = tf.contrib.image.rotate(
+                        x_input, 10 * math.pi / 180, interpolation='BILINEAR')
 
     with slim.arg_scope(inception.inception_v3_arg_scope()):
       _, end_points = inception.inception_v3(
-          x_input, num_classes=num_classes, is_training=False)
+          x_input_rotated, num_classes=num_classes, is_training=False)
 
     predicted_labels = tf.argmax(end_points['Predictions'], 1)
 
@@ -100,30 +102,9 @@ def main(_):
         checkpoint_filename_with_path=FLAGS.checkpoint_path,
         master=FLAGS.master)
 
-    # load comparison images
-    full_batch = (1000, batch_shape[1], batch_shape[2], batch_shape[3])
-    paths = tf.gfile.Glob(os.path.join(devset_dir, '*.png'))
-    comparison = np.zeros(full_batch)
-    for idx, filepath in enumerate(paths):
-      image = imread(filepath, mode='RGB').astype(np.float) / 255.0
-      # Images for inception classifier are normalized to be in [-1, 1] interval.
-      comparison[idx, :, :, :] = image * 2.0 - 1.0
-
-    def comparison_swap(images):
-      swapped = np.zeros_like(images)
-      #l2_distance = np.square(comparison[np.newaxis,:,:,:,:] - images[:,np.newaxis,:,:,:])
-      #closest_inds = np.argmin(np.sum(l2_distance, axis=[2,3,4]), axis=1)
-      for i in range(images.shape[0]):
-        l2_distance = np.sum(np.square(comparison - images[np.newaxis,i]), axis=(1,2,3))
-        closest_ind = np.argmin(l2_distance)
-        swapped[i,:,:,:] = comparison[closest_ind,:,:,:]
-        #swapped[i,:,:,:] = comparison[closest_inds[i],:,:,:]
-      return swapped
-
     with tf.train.MonitoredSession(session_creator=session_creator) as sess:
-      with open(FLAGS.output_file, 'w') as out_file:
+      with tf.gfile.Open(FLAGS.output_file, 'w') as out_file:
         for filenames, images in load_images(FLAGS.input_dir, batch_shape):
-          images = comparison_swap(images)
           labels = sess.run(predicted_labels, feed_dict={x_input: images})
           for filename, label in zip(filenames, labels):
             out_file.write('{0},{1}\n'.format(filename, label))

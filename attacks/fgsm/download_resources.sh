@@ -15,8 +15,3 @@ if [ ! -e "inception_v3.ckpt" ]; then
     rm inception_v3_2016_08_28.tar.gz
 fi
 
-if [ ! -d "${SCRIPT_DIR}/comparison_images" ]; then
-    # Control will enter here if $DIRECTORY doesn't exist.
-    mkdir "${SCRIPT_DIR}/comparison_images"
-    cp "${SCRIPT_DIR}/../../dataset/images"/*.png "${SCRIPT_DIR}/comparison_images/"
-fi

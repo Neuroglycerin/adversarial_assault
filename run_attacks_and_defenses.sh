@@ -13,21 +13,24 @@ DATASET_DIR="${SCRIPT_DIR}/dataset/images"
 DATASET_METADATA_FILE="${SCRIPT_DIR}/dataset/dev_dataset.csv"
 MAX_EPSILON=16
 
+mkdir -p "${ATTACKS_DIR}"
+mkdir -p "${TARGETED_ATTACKS_DIR}"
+mkdir -p "${DEFENSES_DIR}"
+touch "${ATTACKS_DIR}/placeholder"
+touch "${TARGETED_ATTACKS_DIR}/placeholder"
+touch "${DEFENSES_DIR}/placeholder"
+
 # Prepare working directory and copy all necessary files.
 # In particular copy attacks defenses and dataset, so originals won't
 # be overwritten.
-if [[ "${OSTYPE}" == "darwin"* ]]; then
-    WORKING_DIR="/private"$(mktemp -d)
-else
-    #WORKING_DIR=$(mktemp -d)
-    WORKING_DIR="$(dirname "${SCRIPT_DIR}")"/working
-    mkdir -p "${WORKING_DIR}"
-fi
+WORKING_DIR=${1:-"$(dirname "${SCRIPT_DIR}")"/working}
+mkdir -p "${WORKING_DIR}"
+
 echo "Preparing working directory: ${WORKING_DIR}"
-rm -rf "${WORKING_DIR}/attacks"
-rm -rf "${WORKING_DIR}/targeted_attacks"
-rm -rf "${WORKING_DIR}/defenses"
-rm -rf "${WORKING_DIR}/intermediate_results/all_adv_examples/"
+sudo rm -rf "${WORKING_DIR}/attacks"
+sudo rm -rf "${WORKING_DIR}/targeted_attacks"
+sudo rm -rf "${WORKING_DIR}/defenses"
+sudo rm -rf "${WORKING_DIR}/intermediate_results/all_adv_examples/"
 mkdir -p "${WORKING_DIR}/attacks"
 mkdir -p "${WORKING_DIR}/targeted_attacks"
 mkdir -p "${WORKING_DIR}/defenses"
