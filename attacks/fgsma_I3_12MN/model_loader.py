@@ -115,7 +115,7 @@ class ModelLoader():
         files = [f for f in files if '.ckpt' in f]
         # If there is only one, that's it!
         if len(files) == 1:
-            return files[0]
+            return os.path.join(checkpoint_path, files[0])
         if not files:
             raise EnvironmentError('No .ckpt file found in path {}'
                                    ''.format(checkpoint_path))
@@ -140,7 +140,7 @@ class ModelLoader():
         fname = fname[0:fname.find('.ckpt')] + '.ckpt'
         if highest_step > -1:
             fname += '-' + str(highest_step)
-        return fname
+        return os.path.join(checkpoint_path, fname)
 
 
     def prepare_graph(self):
