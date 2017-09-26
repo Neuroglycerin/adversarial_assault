@@ -45,7 +45,7 @@ else
   GPU_FLAG="--nogpu"
 fi
 
-echo "Running attacks and defenses"
+echo "Running attacks on 100 sample images"
 python "${SCRIPT_DIR}/run_attack_100.py" \
   --attacks_dir="${WORKING_DIR}/attacks" \
   --targeted_attacks_dir="${WORKING_DIR}/targeted_attacks" \
