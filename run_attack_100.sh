@@ -8,8 +8,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ATTACKS_DIR="${SCRIPT_DIR}/attacks"
 TARGETED_ATTACKS_DIR="${SCRIPT_DIR}/targeted_attacks"
-DATASET_DIR="${SCRIPT_DIR}/dataset/images"
-DATASET_METADATA_FILE="${SCRIPT_DIR}/dataset/dev_dataset.csv"
+DATASET_DIR="${SCRIPT_DIR}/dataset/100images"
+DATASET_METADATA_FILE="${SCRIPT_DIR}/dataset/dev_dataset_100.csv"
 MAX_EPSILON=16
 
 mkdir -p "${ATTACKS_DIR}"
