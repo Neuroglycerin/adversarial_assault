@@ -8,6 +8,7 @@
 *.tar.gz
 # ignore dataset images
 dataset/images
+dataset/100images
 output
 
 
