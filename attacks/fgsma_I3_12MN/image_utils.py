@@ -39,7 +39,7 @@ def random_contrast(images, lower, upper, seed=None):
 
 
 def adjust_hue(image, theta, name=None, source_space='rgb'):
-    if source_space.lower() is 'rgb':
+    if source_space.lower() == 'rgb':
         image = colorspace_transform.tf_rgb_to_flab(image)
 
     # Add extra dimensions to theta, so it is the same across 2D space
@@ -76,7 +76,7 @@ def adjust_hue(image, theta, name=None, source_space='rgb'):
     # Remove the dimension we added as a precaution earlier
     image = tf.squeeze(image, 0)
 
-    if source_space.lower() is 'rgb':
+    if source_space.lower() == 'rgb':
         # Convert back to RGB space
         image = colorspace_transform.tf_flab_to_rgb(image)
     return image
@@ -91,7 +91,7 @@ def random_hue(image, max_theta, seed=None, source_space='rgb'):
 
 
 def adjust_saturation(image, saturation_factor, name=None, source_space='rgb'):
-    if source_space.lower() is 'rgb':
+    if source_space.lower() == 'rgb':
         image = colorspace_transform.tf_rgb_to_flab(image)
     # Add extra dimensions to the factor, so it is the same across 2D space
     saturation_factor = tf.expand_dims(saturation_factor, axis=-1)
@@ -100,7 +100,7 @@ def adjust_saturation(image, saturation_factor, name=None, source_space='rgb'):
     ones = tf.ones_like(saturation_factor)
     M = tf.stack([ones, saturation_factor, saturation_factor], axis=-1)
     image *= M
-    if source_space.lower() is 'rgb':
+    if source_space.lower() == 'rgb':
         image = colorspace_transform.tf_flab_to_rgb(image)
     return image
 
