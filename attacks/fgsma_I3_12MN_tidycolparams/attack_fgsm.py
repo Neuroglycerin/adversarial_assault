@@ -216,9 +216,9 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
         image = image_utils.random_hue(image, max_theta=hue_delta)
 
       elif color_ordering == 2:
-      image = image_utils.random_contrast(image,
-                                          lower=(1. - contrast_delta),
-                                          upper=(1. + contrast_delta))
+        image = image_utils.random_contrast(image,
+                                            lower=(1. - contrast_delta),
+                                            upper=(1. + contrast_delta))
         image = image_utils.random_hue(image, max_theta=hue_delta)
         image = tf.image.random_brightness(image, max_delta=brightness_delta)
         image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
