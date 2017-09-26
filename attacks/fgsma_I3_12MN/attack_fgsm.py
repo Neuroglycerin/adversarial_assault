@@ -230,6 +230,9 @@ def main(_):
     tf.logging.set_verbosity(tf.logging.INFO)
 
     with tf.Graph().as_default():
+        # Fix seed for reproducibility
+        tf.set_random_seed(9349008288)
+
         # Prepare graph
         x_input = tf.placeholder(tf.float32, shape=batch_shape)
         x_max = tf.clip_by_value(x_input + eps, -1.0, 1.0)
