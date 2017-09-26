@@ -38,9 +38,8 @@ def random_contrast(images, lower, upper, seed=None):
     return adjust_contrast(images, contrast_factor)
 
 
-def adjust_hue(image, theta, name=None, source_space='rgb'):
-    if source_space.lower() is 'rgb':
-        image = colorspace_transform.tf_rgb_to_flab(image)
+def adjust_hue(image, theta, name=None):
+    image = colorspace_transform.tf_rgb_to_flab(image)
 
     # Add extra dimensions to theta, so it is the same across 2D space
     theta = tf.expand_dims(theta, axis=-1)
@@ -76,23 +75,21 @@ def adjust_hue(image, theta, name=None, source_space='rgb'):
     # Remove the dimension we added as a precaution earlier
     image = tf.squeeze(image, 0)
 
-    if source_space.lower() is 'rgb':
-        # Convert back to RGB space
-        image = colorspace_transform.tf_flab_to_rgb(image)
+    # Convert back to RGB space
+    image = colorspace_transform.tf_flab_to_rgb(image)
     return image
 
 
-def random_hue(image, max_theta, seed=None, source_space='rgb'):
+def random_hue(image, max_theta, seed=None):
     theta = _uniform_random_per_image(image.shape,
                                       lower=-max_theta,
                                       upper=max_theta,
                                       seed=seed)
-    return adjust_hue(image, theta, source_space=source_space)
+    return adjust_hue(image, theta)
 
 
-def adjust_saturation(image, saturation_factor, name=None, source_space='rgb'):
-    if source_space.lower() is 'rgb':
-        image = colorspace_transform.tf_rgb_to_flab(image)
+def adjust_saturation(image, saturation_factor, name=None):
+    image = colorspace_transform.tf_rgb_to_flab(image)
     # Add extra dimensions to the factor, so it is the same across 2D space
     saturation_factor = tf.expand_dims(saturation_factor, axis=-1)
     if len(saturation_factor.shape) < len(image.shape) - 1:
@@ -100,15 +97,13 @@ def adjust_saturation(image, saturation_factor, name=None, source_space='rgb'):
     ones = tf.ones_like(saturation_factor)
     M = tf.stack([ones, saturation_factor, saturation_factor], axis=-1)
     image *= M
-    if source_space.lower() is 'rgb':
-        image = colorspace_transform.tf_flab_to_rgb(image)
+    image = colorspace_transform.tf_flab_to_rgb(image)
     return image
 
 
-def random_saturation(image, lower, upper, seed=None, source_space='rgb'):
+def random_saturation(image, lower, upper, seed=None):
     saturation_factor = _uniform_random_per_image(image.shape,
                                                   lower=lower,
                                                   upper=upper,
                                                   seed=seed)
-    return adjust_saturation(image, saturation_factor,
-                             source_space=source_space)
+    return adjust_saturation(image, saturation_factor)

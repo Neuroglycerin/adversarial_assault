@@ -12,7 +12,6 @@ from PIL import Image
 
 import tensorflow as tf
 from slim.preprocessing import inception_preprocessing
-from slim.layers import colorspace_transform
 
 import model_loader
 import image_utils
@@ -180,12 +179,8 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
     else:
       if color_ordering == 0:
         image = tf.image.random_brightness(image, max_delta=64. / 255.)
-        image = colorspace_transform.tf_rgb_to_flab(image)
-        image = image_utils.random_saturation(image, lower=0.5, upper=1.5,
-                                              source_space='flab')
-        image = image_utils.random_hue(image, max_theta=0.785,
-                                       source_space='flab')
-        image = colorspace_transform.tf_flab_to_rgb(image)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
+        image = image_utils.random_hue(image, max_theta=0.785)
         image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
       elif color_ordering == 1:
         image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
@@ -198,12 +193,8 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
         image = tf.image.random_brightness(image, max_delta=64. / 255.)
         image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
       elif color_ordering == 3:
-        image = colorspace_transform.tf_rgb_to_flab(image)
-        image = image_utils.random_hue(image, max_theta=0.785,
-                                       source_space='flab')
-        image = image_utils.random_saturation(image, lower=0.5, upper=1.5,
-                                              source_space='flab')
-        image = colorspace_transform.tf_flab_to_rgb(image)
+        image = image_utils.random_hue(image, max_theta=0.785)
+        image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
         image = image_utils.random_contrast(image, lower=0.5, upper=1.5)
         image = tf.image.random_brightness(image, max_delta=64. / 255.)
       else:
