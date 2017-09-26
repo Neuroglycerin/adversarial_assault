@@ -110,6 +110,10 @@ class ModelLoader():
     def _sanitise_checkpoint_path(self, checkpoint_path):
         if os.path.isfile(checkpoint_path):
             return checkpoint_path
+        if not os.path.isdir(checkpoint_path):
+            print('Caution! The file {} does not exist!'
+                  ''.format(checkpoint_path))
+            return checkpoint_path
         # List directory contents, for files containing .ckpt
         files = os.listdir(checkpoint_path)
         files = [f for f in files if '.ckpt' in f]
