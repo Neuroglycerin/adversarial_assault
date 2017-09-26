@@ -169,76 +169,76 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
   Raises:
     ValueError: if color_ordering not in [0, 3]
   """
-  brightness_delta = 64. / 255.
-  contrast_delta = 0.5
-  saturation_delta = 0.5
-  hue_delta = 0.785
+  brightness_max_delta = 0.125 * 2.
+  contrast_max_ratio = 1.5
+  saturation_max_ratio = 1.5
+  hue_max_delta = 0.785
   with tf.name_scope(scope, 'distort_color', [image]):
     if fast_mode:
       if color_ordering == 0:
-        image = tf.image.random_brightness(image, max_delta=brightness_delta)
+        image = tf.image.random_brightness(image, max_delta=brightness_max_delta)
         image = image_utils.random_saturation(image,
-                                              lower=(1. - saturation_delta),
-                                              upper=(1. + saturation_delta))
+                                              lower=(1. / saturation_max_ratio),
+                                              upper=saturation_max_ratio)
 
       else:
         image = image_utils.random_saturation(image,
-                                              lower=(1. - saturation_delta),
-                                              upper=(1. + saturation_delta))
-        image = tf.image.random_brightness(image, max_delta=brightness_delta)
+                                              lower=(1. / saturation_max_ratio),
+                                              upper=saturation_max_ratio)
+        image = tf.image.random_brightness(image, max_delta=brightness_max_delta)
 
     else:
       if color_ordering == 0:
-        image = tf.image.random_brightness(image, max_delta=brightness_delta)
+        image = tf.image.random_brightness(image, max_delta=brightness_max_delta)
         # This part all in fLAB colorspace
         image = colorspace_transform.tf_rgb_to_flab(image)
         image = image_utils.random_saturation(image,
-                                              lower=(1. - saturation_delta),
-                                              upper=(1. + saturation_delta),
+                                              lower=(1. / saturation_max_ratio),
+                                              upper=saturation_max_ratio,
                                               source_space='flab')
         image = image_utils.random_hue(image,
-                                       max_theta=hue_delta,
+                                       max_theta=hue_max_delta,
                                        source_space='flab')
         image = colorspace_transform.tf_flab_to_rgb(image)
         # Back to RGB colorspace
         image = image_utils.random_contrast(image,
-                                            lower=(1. - contrast_delta),
-                                            upper=(1. + contrast_delta))
+                                            lower=(1. / contrast_max_ratio),
+                                            upper=contrast_max_ratio)
 
       elif color_ordering == 1:
         image = image_utils.random_saturation(image,
-                                              lower=(1. - saturation_delta),
-                                              upper=(1. + saturation_delta))
-        image = tf.image.random_brightness(image, max_delta=brightness_delta)
+                                              lower=(1. / saturation_max_ratio),
+                                              upper=saturation_max_ratio)
+        image = tf.image.random_brightness(image, max_delta=brightness_max_delta)
         image = image_utils.random_contrast(image,
-                                            lower=(1. - contrast_delta),
-                                            upper=(1. + contrast_delta))
-        image = image_utils.random_hue(image, max_theta=hue_delta)
+                                            lower=(1. / contrast_max_ratio),
+                                            upper=contrast_max_ratio)
+        image = image_utils.random_hue(image, max_theta=hue_max_delta)
 
       elif color_ordering == 2:
         image = image_utils.random_contrast(image,
-                                            lower=(1. - contrast_delta),
-                                            upper=(1. + contrast_delta))
-        image = image_utils.random_hue(image, max_theta=hue_delta)
-        image = tf.image.random_brightness(image, max_delta=brightness_delta)
+                                            lower=(1. / contrast_max_ratio),
+                                            upper=contrast_max_ratio)
+        image = image_utils.random_hue(image, max_theta=hue_max_delta)
+        image = tf.image.random_brightness(image, max_delta=brightness_max_delta)
         image = image_utils.random_saturation(image, lower=0.5, upper=1.5)
 
       elif color_ordering == 3:
         # This part all in fLAB colorspace
         image = colorspace_transform.tf_rgb_to_flab(image)
         image = image_utils.random_hue(image,
-                                       max_theta=hue_delta,
+                                       max_theta=hue_max_delta,
                                        source_space='flab')
         image = image_utils.random_saturation(image,
-                                              lower=(1. - saturation_delta),
-                                              upper=(1. + saturation_delta),
+                                              lower=(1. / saturation_max_ratio),
+                                              upper=saturation_max_ratio,
                                               source_space='flab')
         image = colorspace_transform.tf_flab_to_rgb(image)
         # This part all in RGB colorspace
         image = image_utils.random_contrast(image,
-                                            lower=(1. - contrast_delta),
-                                            upper=(1. + contrast_delta))
-        image = tf.image.random_brightness(image, max_delta=brightness_delta)
+                                            lower=(1. / contrast_max_ratio),
+                                            upper=contrast_max_ratio)
+        image = tf.image.random_brightness(image, max_delta=brightness_max_delta)
 
       else:
         raise ValueError('color_ordering must be in [0, 3]')
