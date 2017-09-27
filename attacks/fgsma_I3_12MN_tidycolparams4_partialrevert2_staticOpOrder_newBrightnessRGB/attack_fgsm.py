@@ -136,8 +136,8 @@ def augment_single_pre_resize(image, rotation_max_angle=5, source_space='rgb'):
     image = image_utils.random_contrast(image,
                                         lower=(1. / contrast_max_ratio),
                                         upper=contrast_max_ratio)
-    images = image_utils.random_brightness(
-        images,
+    image = image_utils.random_brightness(
+        image,
         max_delta=brightness_max_delta,
         source_space='rgb')
 
