@@ -239,17 +239,17 @@ def main(_):
         # First, transform the image into flab space for preprocessing
         #x_adv = colorspace_transform.tf_rgb_to_flab(x_adv)
         # We will do all the pre-resize operations in this colorspace
-        pre_resize_fn = lambda x: augment_batch_pre_resize(x) #, source_space='flab')
+        #pre_resize_fn = lambda x: augment_batch_pre_resize(x) #, source_space='flab')
         # Then we transform back to RGB space before adding pixel-wise noise
-        post_resize_fn = lambda x: augment_batch_post_resize(x)
+        #post_resize_fn = lambda x: augment_batch_post_resize(x)
         #    augment_batch_post_resize(colorspace_transform.tf_flab_to_rgb(x))
 
         logits_list = []
         for model in model_stack.models:
             logits_list += model.get_logits(
                 x_adv,
-                pre_resize_fn=pre_resize_fn,
-                post_resize_fn=post_resize_fn)
+                pre_resize_fn=augment_batch_pre_resize,
+                post_resize_fn=augment_batch_post_resize)
         if FLAGS.num_aug > 1:
             logits_list = [tf.reduce_mean(logits, axis=0, keep_dims=True)
                            for logits in logits_list]
