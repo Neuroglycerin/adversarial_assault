@@ -47,10 +47,10 @@ def distort_color(image,
   Raises:
     ValueError: if color_ordering not in [0, 3]
   """
-  brightness_max_delta = self.brightness_max_delta
-  contrast_max_ratio = self.contrast_max_ratio
-  saturation_max_ratio = self.saturation_max_ratio
-  hue_max_delta = self.hue_max_degree * math.pi / 180
+  brightness_max_delta = brightness_max_delta
+  contrast_max_ratio = contrast_max_ratio
+  saturation_max_ratio = saturation_max_ratio
+  hue_max_delta = hue_max_degree * math.pi / 180
   with tf.name_scope(scope, 'distort_color', [image]):
     if fast_mode:
       if color_ordering == 0:
