@@ -240,8 +240,11 @@ def distort_color(image, color_ordering=0, fast_mode=True, scope=None):
 
 def augment_batch_pre_resize(x):
     images = tf.unstack(x, axis=0)
-    images = [augment_single_pre_resize(image) for image in images]
-    return tf.stack(images, axis=0)
+    augmented_images = []
+    for image in images:
+        for i in range(FLAGS.num_aug):
+            augmented_images.append(augment_single_pre_resize(image))
+    return tf.stack(augmented_images, axis=0)
 
 
 def augment_batch_post_resize(images):
