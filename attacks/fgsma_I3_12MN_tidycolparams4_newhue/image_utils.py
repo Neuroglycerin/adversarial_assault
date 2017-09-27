@@ -320,12 +320,12 @@ def adjust_hue(images, theta, name=None, source_space='rgb'):
     ab_comp = tf.squeeze(ab_comp, 0)
 
     # Now we join the L, A and B components back together
-    images = tf.concat((lightness, a_and_b_components), axis=-1)
+    images = tf.concat((lightness, ab_comp), axis=-1)
 
     if source_space.lower() == 'rgb':
         # Convert back to RGB space
-        image = colorspace_transform.tf_flab_to_rgb(image)
-    return image
+        images = colorspace_transform.tf_flab_to_rgb(images)
+    return images
 
 
 def random_hue(image, max_theta, seed=None, source_space='rgb'):
