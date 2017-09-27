@@ -125,8 +125,8 @@ def augment_single_pre_resize(image, rotation_max_angle=5, source_space='rgb'):
     # This part all in fLAB colorspace
     image = colorspace_transform.tf_rgb_to_flab(image)
     image = image_utils.random_hue(image,
-                       max_theta=hue_max_delta,
-                       source_space='flab')
+                                   max_theta=hue_max_degree,
+                                   source_space='flab')
     image = image_utils.random_saturation_and_contrast(
         image,
         saturation_lower=(1. / saturation_max_ratio),
@@ -136,8 +136,8 @@ def augment_single_pre_resize(image, rotation_max_angle=5, source_space='rgb'):
         source_space='flab')
     # This part all in RGB colorspace
     image = image_utils.random_contrast(image,
-                            lower=(1. / contrast_max_ratio),
-                            upper=contrast_max_ratio)
+                                        lower=(1. / contrast_max_ratio),
+                                        upper=contrast_max_ratio)
     image = tf.image.random_brightness(image, max_delta=brightness_max_delta)
 
     return image
