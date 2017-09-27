@@ -20,7 +20,7 @@ touch "${TARGETED_ATTACKS_DIR}/placeholder"
 # Prepare working directory and copy all necessary files.
 # In particular copy attacks defenses and dataset, so originals won't
 # be overwritten.
-WORKING_DIR=${1:-"$(dirname "${SCRIPT_DIR}")"/working100}
+WORKING_DIR=${1:-"$(dirname "${SCRIPT_DIR}")"/100working}
 mkdir -p "${WORKING_DIR}"
 
 echo "Preparing working directory: ${WORKING_DIR}"
