@@ -134,6 +134,7 @@ def augment_single_pre_resize(image, rotation_max_angle=5, source_space='rgb'):
         contrast_lower=(1. / contrast_max_ratio),
         contrast_upper=contrast_max_ratio,
         source_space='flab')
+    image = colorspace_transform.tf_flab_to_rgb(image)
     # This part all in RGB colorspace
     image = image_utils.random_contrast(image,
                                         lower=(1. / contrast_max_ratio),
