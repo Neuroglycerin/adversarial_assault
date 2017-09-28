@@ -302,8 +302,6 @@ def main(_):
         x_adv = x_input
         needs_update = tf.ones([], dtype=tf.bool)
         for iter_count in range(FLAGS.max_iter):
-            # Stop the gradients! We must take the gradient within the loop.
-            x_adv = tf.stop_gradient(x_adv)
             # Generate augmented versions of input and forward propogate
             logits = tf.cond(needs_update,
                              lambda: update_logits(x_adv),
