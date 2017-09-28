@@ -265,7 +265,7 @@ def main(_):
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
             scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x_adv)[0])
-            x_adv = tf.stop_gradient(x_adv + scaled_signed_grad)
+            x_adv = x_adv + scaled_signed_grad
             x_adv = tf.clip_by_value(x_adv, x_min, x_max)
             return x_adv
 
@@ -294,6 +294,7 @@ def main(_):
             return logits
 
         def body(iter_count, x_adv, logits, label_is_right):
+            x_adv = tf.stop_gradient(x_adv)
             # Make augmented copies of the inputs and forward propogate
             logits = update_logits(x_adv)
             # Now check if we are getting the label right
