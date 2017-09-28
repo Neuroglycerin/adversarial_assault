@@ -266,9 +266,9 @@ def main(_):
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
             scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x_adv)[0])
-            x_adv = x_adv + scaled_signed_grad
-            x_adv = tf.clip_by_value(x_adv, x_min, x_max)
-            return x_adv
+            x_next = tf.stop_gradient(x_adv + scaled_signed_grad)
+            x_next = tf.clip_by_value(x_next, x_min, x_max)
+            return x_next
 
         def update_logits(x_adv):
             # Now we generate new inputs with which to check whether we hit the
