@@ -306,7 +306,7 @@ def main(_):
             x_adv = tf.stop_gradient(x_adv)
             # Generate augmented versions of input and forward propogate
             logits = tf.cond(needs_update,
-                             lambda: update_logits(x_adv)
+                             lambda: update_logits(x_adv),
                              lambda: logits)
             # Check whether the current prediction is accurate
             label_is_right = test_accuracy(logits)
