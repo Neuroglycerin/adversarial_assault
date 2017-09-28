@@ -262,6 +262,7 @@ def main(_):
         def update_x(x_adv, logits):
             # First, we manipulate the image based on the output from the last
             # input image
+            weights = tf.stop_gradient(weights)
             cross_entropy = tf.losses.softmax_cross_entropy(weights, logits)
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
