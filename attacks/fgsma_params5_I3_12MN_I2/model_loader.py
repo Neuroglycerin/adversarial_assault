@@ -48,9 +48,29 @@ model_name_to_default_scope_map = {
     }
 
 
+model_groups = [
+    'alexnet',
+    'cifarnet',
+    'deadversiser',
+    'overfeat',
+    'vgg',
+    'inception_v1',
+    'inception_v2',
+    'inception_v3',
+    'inception_v4',
+    'inception_resnet_v2',
+    'lenet',
+    'resnet',
+    'mobilenet',
+    'xception',
+    ]
+
+
 model_groups_which_need_manual_squeeze = [
     'mobilenet',
     'resnet',
+    'inception_v1',
+    'inception_v2',
     ]
 
 model_groups_which_take_1000_classes = [
@@ -67,6 +87,18 @@ def model_name_to_scope(model_name):
         partial_model_name = '_'.join(parts[:-i])
         if partial_model_name in model_name_to_default_scope_map:
             return model_name_to_default_scope_map[partial_model_name]
+    raise ValueError('Model name (and its leading parital parts) {} not'
+                     'found'.format(model_name))
+
+
+def model_name_to_group(model_name):
+    if model_name in model_groups:
+        return model_groups[model_name]
+    parts = model_name.split('_')
+    for i in range(1, len(parts)):
+        partial_model_name = '_'.join(parts[:-i])
+        if partial_model_name in model_groups:
+            return model_groups[partial_model_name]
     raise ValueError('Model name (and its leading parital parts) {} not'
                      'found'.format(model_name))
 
@@ -92,7 +124,7 @@ class ModelLoader():
         self.num_channels = num_channels
 
         self._scope_in_checkpoint = model_name_to_scope(model_name)
-        self._model_group = model_name.split('_')[0]
+        self._model_group = model_name_to_group(model_name)
 
         if scope_to_use is None:
             self.scope_to_use = self._scope_in_checkpoint
