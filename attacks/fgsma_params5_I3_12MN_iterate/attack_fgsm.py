@@ -240,7 +240,7 @@ def main(_):
         weights = tf.stop_gradient(weights)
 
         # Now, put through augmented inputs to determine the vector to move in
-        def test_loop_continue(iter_count, x_adv, logits, label_is_right):
+        def test_loop_continue(iter_count, x_adv, logits, weights, label_is_right):
             # We always do the first step, otherwise the image is unchanged
             is_first_iter = tf.equal(iter_count, 0)
             # Otherwise, we only continue if we have not hit the iteration
@@ -259,7 +259,7 @@ def main(_):
             label_is_right = tf.reduce_any(label_is_right, axis=0)
             return label_is_right
 
-        def update_x(x_adv, logits):
+        def update_x(x_adv, logits, weights):
             # First, we manipulate the image based on the output from the last
             # input image
             weights = tf.stop_gradient(weights)
@@ -295,7 +295,7 @@ def main(_):
                 logits = tf.reduce_mean(logits, axis=0, keep_dims=True)
             return logits
 
-        def body(iter_count, x_adv, logits, label_is_right):
+        def body(iter_count, x_adv, logits, weights, label_is_right):
             x_adv = tf.stop_gradient(x_adv)
             # Make augmented copies of the inputs and forward propogate
             logits = update_logits(x_adv)
@@ -306,18 +306,18 @@ def main(_):
             needs_update = tf.logical_or(is_first_iter, label_is_right)
             # Maybe update x_adv
             x_adv = tf.cond(needs_update,
-                            lambda: update_x(x_adv, logits),
+                            lambda: update_x(x_adv, logits, weights),
                             lambda: x_adv)
             iter_count += 1
-            return iter_count, x_adv, logits, label_is_right
+            return iter_count, x_adv, logits, weights, label_is_right
 
         # Initialise loop variables
         # We start with the true image
         x_adv = x_input
         iter_count = 0
         label_is_right = True
-        iter_count, x_adv, logits, label_is_right = tf.while_loop(
-            test_loop_continue, body, (iter_count, x_adv, logits, label_is_right))
+        iter_count, x_adv, logits, _, label_is_right = tf.while_loop(
+            test_loop_continue, body, (iter_count, x_adv, logits, weights, label_is_right))
 
         # Run computation
         with tf.Session() as sess:
