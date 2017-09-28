@@ -224,7 +224,7 @@ def main(_):
 
         preds_sorted, sort_indices = tf.nn.top_k(
             preds, k=(num_classes - 1), sorted=True)
-        top_label_index = sort_indices[:, 0]
+        top_label_index = tf.stop_gradient(sort_indices[:, 0])
         sort_indices_offset = sort_indices + tf.expand_dims(tf.range(FLAGS.batch_size), 1)
 
         preds_sum = tf.cumsum(preds_sorted, axis=-1, exclusive=True)
@@ -237,6 +237,7 @@ def main(_):
                                 tf.reshape(weights_sorted, [-1]),
                                 [FLAGS.batch_size * num_classes])
         weights = tf.reshape(weights, preds.shape)
+        weights = tf.stop_gradient(weights)
 
         # Now, put through augmented inputs to determine the vector to move in
         def test_loop_continue(iter_count, x_adv, logits, label_is_right):
