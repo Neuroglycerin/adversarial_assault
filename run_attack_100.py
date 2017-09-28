@@ -406,8 +406,11 @@ def load_defense_output(filename):
 
 
 def load_duration(filename):
-  with open(filename) as f:
-    return float(f.read())
+  try:
+    with open(filename) as f:
+      return float(f.read())
+  except ValueError:
+    return None
 
 
 def compute_and_save_scores_and_ranking(attacks_output,
