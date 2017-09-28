@@ -317,7 +317,7 @@ def main(_):
         # Initialise loop variables
         # We start with the true image
         x_adv = x_input
-        needs_update = True
+        needs_update = tf.ones([], dtype=tf.bool)
         for iter_count in range(FLAGS.max_iter):
             x_adv, needs_update = tf.cond(needs_update,
                                           lambda: body(x_adv),
