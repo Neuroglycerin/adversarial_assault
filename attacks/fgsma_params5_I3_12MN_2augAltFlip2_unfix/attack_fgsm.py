@@ -125,7 +125,7 @@ def augment_single_pre_resize(image, rotation_max_angle=5, source_space='rgb', i
     else:
         unflipped = lambda: image
         flipped = lambda: tf.image.flip_left_right(image)
-        image = tf.cond(tf.less(tf.floormod(i_offset, 2), 1), unflipped, flipped)
+        image = tf.cond(tf.less(tf.floormod(index, 2), 1), unflipped, flipped)
 
     # Randomly distort the colors. There are 4 ways to do it.
     # This part all in fLAB colorspace
