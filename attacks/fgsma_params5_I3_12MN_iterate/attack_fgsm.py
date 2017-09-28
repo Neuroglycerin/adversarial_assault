@@ -239,21 +239,24 @@ def main(_):
         weights = tf.reshape(weights, preds.shape)
 
         # Now, put through augmented inputs to determine the vector to move in
-        def cond(iter_count, x_adv, logits):
+        def test_loop_continue(iter_count, x_adv, logits, label_is_right):
             # We always do the first step, otherwise the image is unchanged
             is_first_iter = tf.equal(iter_count, 0)
             # Otherwise, we only continue if we have not hit the iteration
             # limit
             iter_limit_not_reached = tf.less(iter_count, FLAGS.max_iter)
             # And if the predicted label is still correct
-            predicted_label = tf.argmax(logits, axis=-1, output_type=tf.int32)
-            label_is_right = tf.equal(top_label_index, predicted_label)
-            label_is_right = tf.reduce_any(label_is_right, axis=0)
             # Put this all together
             return tf.logical_or(is_first_iter,
                                  tf.logical_and(iter_limit_not_reached,
                                                 label_is_right)
                                  )
+
+        def test_accuracy(logits):
+            predicted_label = tf.argmax(logits, axis=-1, output_type=tf.int32)
+            label_is_right = tf.equal(top_label_index, predicted_label)
+            label_is_right = tf.reduce_any(label_is_right, axis=0)
+            return label_is_right
 
         def update_x(x_adv, logits):
             # First, we manipulate the image based on the output from the last
@@ -290,19 +293,28 @@ def main(_):
                 logits = tf.reduce_mean(logits, axis=0, keep_dims=True)
             return logits
 
-        def body(iter_count, x_adv, logits):
-            x_adv = update_x(x_adv, logits)
-            iter_count += 1
+        def body(iter_count, x_adv, logits, label_is_right):
+            # Make augmented copies of the inputs and forward propogate
             logits = update_logits(x_adv)
-            return iter_count, x_adv, logits
+            # Now check if we are getting the label right
+            label_is_right = test_accuracy(logits)
+            # We always do the first step, otherwise the image is unchanged
+            is_first_iter = tf.equal(iter_count, 0)
+            needs_update = tf.logical_or(is_first_iter, label_is_right)
+            # Maybe update x_adv
+            x_adv = tf.cond(needs_update,
+                            lambda: update_x(x_adv, logits),
+                            lambda: x_adv)
+            iter_count += 1
+            return iter_count, x_adv, logits, label_is_right
 
-        # Initialise with true image
+        # Initialise loop variables
+        # We start with the true image
         x_adv = x_input
-        # Forward propagate for new logits
-        logits = update_logits(x_adv)
         iter_count = 0
-        iter_count, x_adv, logits = tf.while_loop(
-            cond, body, (iter_count, x_adv, logits))
+        label_is_right = True
+        iter_count, x_adv, logits, label_is_right = tf.while_loop(
+            test_loop_continue, body, (iter_count, x_adv, logits, label_is_right))
 
         # Run computation
         with tf.Session() as sess:
