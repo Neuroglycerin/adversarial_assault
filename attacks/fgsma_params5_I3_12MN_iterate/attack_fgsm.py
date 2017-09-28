@@ -246,7 +246,7 @@ def main(_):
             # limit
             iter_limit_not_reached = tf.less(iter_count, FLAGS.max_iter)
             # And if the predicted label is still correct
-            predicted_label = tf.arg_max(logits, dtype=tf.int32)
+            predicted_label = tf.argmax(logits, dtype=tf.int32)
             label_is_right = tf.equal(top_label_index, predicted_label)
             # Put this all together
             return tf.logical_or(is_first_iter,
