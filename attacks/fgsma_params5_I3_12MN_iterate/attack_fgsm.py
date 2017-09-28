@@ -295,22 +295,56 @@ def main(_):
             return logits
 
         def body(iter_count, x_adv, logits, weights, top_label_index, label_is_right):
+            # Stop the gradients! We must take the gradient within the loop.
             x_adv = tf.stop_gradient(x_adv)
             weights = tf.stop_gradient(weights)
             top_label_index = tf.stop_gradient(top_label_index)
+
             # Make augmented copies of the inputs and forward propogate
-            logits = update_logits(x_adv)
+            # Now we generate new inputs with which to check whether we hit the
+            # target, and if not collect gradients again
+            # First, transform the image into flab space for preprocessing
+            x_adv_flab = colorspace_transform.tf_rgb_to_flab(x_adv)
+            # We will do all the pre-resize operations in this colorspace
+            pre_resize_fn = lambda x: augment_batch_pre_resize(x, source_space='flab')
+            # Then we transform back to RGB space before adding pixel-wise noise
+            post_resize_fn = lambda x: \
+                augment_batch_post_resize(colorspace_transform.tf_flab_to_rgb(x))
+
+            # Collect up the output logits from each model with each of its augs
+            logits_list = []
+            for model in model_stack.models:
+                logits_list += model.get_logits(
+                    x_adv_flab,
+                    pre_resize_fn=pre_resize_fn,
+                    post_resize_fn=post_resize_fn)
+            logits = tf.reduce_mean(tf.stack(logits_list, axis=-1), axis=-1)
+            if FLAGS.num_aug > 1:
+                assert FLAGS.batch_size == 1
+                logits = tf.reduce_mean(logits, axis=0, keep_dims=True)
+
             # Now check if we are getting the label right
-            label_is_right = test_accuracy(logits, top_label_index)
+            predicted_label = tf.argmax(logits, axis=-1, output_type=tf.int32)
+            label_is_right = tf.equal(top_label_index, predicted_label)
+            label_is_right = tf.reduce_any(label_is_right, axis=0)
             # We always do the first step, otherwise the image is unchanged
             is_first_iter = tf.equal(iter_count, 0)
             needs_update = tf.logical_or(is_first_iter, label_is_right)
             # Maybe update x_adv
-            x_adv = tf.cond(needs_update,
-                            lambda: update_x(x_adv, logits, weights),
-                            lambda: x_adv)
+            #x_adv = tf.cond(needs_update,
+            #                lambda: update_x(x_adv, logits, weights),
+            #                lambda: x_adv)
+
+            # Temporarily, always update the image
+            cross_entropy = tf.losses.softmax_cross_entropy(weights, logits)
+            # First, we manipulate the image based on the gradients of the
+            # cross entropy we just derived
+            scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x_adv)[0])
+            x_next = tf.stop_gradient(x_adv + scaled_signed_grad)
+            x_next = tf.clip_by_value(x_next, x_min, x_max)
+
             iter_count += 1
-            return iter_count, x_adv, logits, weights, label_is_right
+            return iter_count, x_next, logits, weights, label_is_right
 
         # Initialise loop variables
         # We start with the true image
