@@ -262,7 +262,7 @@ def main(_):
             label_is_right = tf.reduce_any(label_is_right, axis=0)
             return label_is_right
 
-        def update_x(x_adv):
+        def update_x(x_adv, logits):
             # First, we manipulate the image based on the output from the last
             # input image
             cross_entropy = tf.losses.softmax_cross_entropy(weights, logits)
@@ -315,7 +315,7 @@ def main(_):
             needs_update = tf.ones([], dtype=bool)
             # Maybe update x_adv
             x_adv = tf.cond(needs_update,
-                            lambda: update_x(x_adv),
+                            lambda: update_x(x_adv, logits),
                             lambda: x_adv)
 
         # Run computation
