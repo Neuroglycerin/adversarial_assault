@@ -265,6 +265,10 @@ def main(_):
                 post_resize_fn=post_resize_fn)
         logits = tf.reduce_mean(tf.stack(logits_list, axis=-1), axis=-1)
 
+        if FLAGS.num_aug > 1:
+            assert FLAGS.batch_size == 1
+            logits = tf.reduce_mean(logits, axis=0, keep_dims=True)
+
         cross_entropy = tf.losses.softmax_cross_entropy(weights, logits)
 
         scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x_input)[0])
