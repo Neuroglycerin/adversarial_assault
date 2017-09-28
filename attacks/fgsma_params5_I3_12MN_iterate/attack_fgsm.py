@@ -248,6 +248,7 @@ def main(_):
             # And if the predicted label is still correct
             predicted_label = tf.argmax(logits, axis=-1, output_type=tf.int32)
             label_is_right = tf.equal(top_label_index, predicted_label)
+            label_is_right = tf.reduce_any(label_is_right, axis=0)
             # Put this all together
             return tf.logical_or(is_first_iter,
                                  tf.logical_and(iter_limit_not_reached,
