@@ -93,12 +93,12 @@ def model_name_to_scope(model_name):
 
 def model_name_to_group(model_name):
     if model_name in model_groups:
-        return model_groups[model_name]
+        return model_name
     parts = model_name.split('_')
     for i in range(1, len(parts)):
         partial_model_name = '_'.join(parts[:-i])
         if partial_model_name in model_groups:
-            return model_groups[partial_model_name]
+            return partial_model_name
     raise ValueError('Model name (and its leading parital parts) {} not'
                      'found'.format(model_name))
 
