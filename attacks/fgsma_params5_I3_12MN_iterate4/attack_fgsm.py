@@ -49,7 +49,7 @@ tf.flags.DEFINE_integer(
     'num_aug', 1, 'Number of augmented repetitions of the image to each net.')
 
 tf.flags.DEFINE_integer(
-    'max_iter', 1, 'Maximum number of iterations.')
+    'max_iter', 2, 'Maximum number of iterations.')
 
 FLAGS = tf.flags.FLAGS
 
@@ -242,42 +242,28 @@ def main(_):
         weights = tf.stop_gradient(weights)
         top_label_index = tf.stop_gradient(top_label_index)
 
-        # Now, put through augmented inputs to determine the vector to move in
-        def test_loop_continue(iter_count, x_adv, logits, weights, top_label_index, label_is_right):
-            # We always do the first step, otherwise the image is unchanged
-            is_first_iter = tf.equal(iter_count, 0)
-            # Otherwise, we only continue if we have not hit the iteration
-            # limit
-            iter_limit_not_reached = tf.less(iter_count, FLAGS.max_iter)
-            # And if the predicted label is still correct
-            # Put this all together
-            return tf.logical_or(is_first_iter,
-                                 tf.logical_and(iter_limit_not_reached,
-                                                label_is_right)
-                                 )
-
-        def test_accuracy(logits):
-            predicted_label = tf.argmax(logits, axis=-1, output_type=tf.int32)
+        def test_accuracy(local_logits):
+            predicted_label = tf.argmax(local_logits, axis=-1, output_type=tf.int32)
             label_is_right = tf.equal(top_label_index, predicted_label)
             label_is_right = tf.reduce_any(label_is_right, axis=0)
             return label_is_right
 
-        def update_x(x_adv, logits):
+        def update_x(local_x, local_logits):
             # First, we manipulate the image based on the output from the last
             # input image
-            cross_entropy = tf.losses.softmax_cross_entropy(weights, logits)
+            cross_entropy = tf.losses.softmax_cross_entropy(weights, local_logits)
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
-            scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x_adv)[0])
-            x_next = tf.stop_gradient(x_adv + scaled_signed_grad)
+            scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, local_x)[0])
+            x_next = tf.stop_gradient(local_x + scaled_signed_grad)
             x_next = tf.clip_by_value(x_next, x_min, x_max)
             return x_next
 
-        def update_logits(x_adv):
+        def update_logits(local_x):
             # Now we generate new inputs with which to check whether we hit the
             # target, and if not collect gradients again
             # First, transform the image into flab space for preprocessing
-            x_adv_flab = colorspace_transform.tf_rgb_to_flab(x_adv)
+            x_flab = colorspace_transform.tf_rgb_to_flab(local_x)
             # We will do all the pre-resize operations in this colorspace
             pre_resize_fn = lambda x: augment_batch_pre_resize(x, source_space='flab')
             # Then we transform back to RGB space before adding pixel-wise noise
@@ -288,7 +274,7 @@ def main(_):
             logits_list = []
             for model in model_stack.models:
                 logits_list += model.get_logits(
-                    x_adv_flab,
+                    x_flab,
                     pre_resize_fn=pre_resize_fn,
                     post_resize_fn=post_resize_fn)
             logits = tf.reduce_mean(tf.stack(logits_list, axis=-1), axis=-1)
@@ -312,9 +298,10 @@ def main(_):
             is_first_iter = tf.equal(iter_count, 0)
             needs_update = tf.logical_or(is_first_iter, label_is_right)
             # Maybe update x_adv
-            x_adv = tf.cond(needs_update,
-                            lambda: update_x(x_adv, logits),
-                            lambda: x_adv)
+            x_next = tf.cond(needs_update,
+                             lambda: update_x(x_adv, logits),
+                             lambda: x_adv)
+            x_adv = x_next
 
         # Run computation
         with tf.Session() as sess:
