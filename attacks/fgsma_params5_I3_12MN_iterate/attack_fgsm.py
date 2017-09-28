@@ -355,6 +355,8 @@ def main(_):
             test_loop_continue,
             body,
             (iter_count, x_adv, logits, weights, top_label_index, label_is_right),
+            parallel_iterations=1,
+            back_prop=False,
             )
 
         # Run computation
