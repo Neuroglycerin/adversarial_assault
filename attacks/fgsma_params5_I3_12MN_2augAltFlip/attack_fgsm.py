@@ -46,7 +46,7 @@ tf.flags.DEFINE_float(
     'p_threshold_antitarget', 0.50, 'What split of probabilities to anti-target.')
 
 tf.flags.DEFINE_integer(
-    'num_aug', 1, 'Number of augmented repetitions of the image to each net.')
+    'num_aug', 2, 'Number of augmented repetitions of the image to each net.')
 
 FLAGS = tf.flags.FLAGS
 
