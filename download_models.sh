@@ -12,6 +12,10 @@ mkdir -p "${MODELS_DIR}"
 cd "${MODELS_DIR}"
 
 
+mkdir -p custom_models
+aws s3 cp s3://neuroglycerin-nips2017-models/custom_models ./custom_models --recursive
+
+
 ###############################################################################
 # Models provided by competiton hosts
 ###############################################################################
