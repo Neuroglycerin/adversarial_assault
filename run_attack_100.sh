@@ -95,7 +95,7 @@ OUTPUT_FILE="${OUTPUT_DIR}/duration_targeted_attack.csv"
 touch "${OUTPUT_FILE}"
 
 echo "Doing targeted attacks"
-for attack in ${ATTACKS_DIR}/*; do
+for attack in ${TARGETED_ATTACKS_DIR}/*; do
     if [ ! -d ${attack} ]; then
         continue
     fi
