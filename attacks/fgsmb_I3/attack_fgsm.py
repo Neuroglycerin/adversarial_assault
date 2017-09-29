@@ -323,9 +323,9 @@ def main(_):
             label_is_right = tf.reduce_any(label_is_right, axis=0)
             return label_is_right
 
-        #iter_limit = tf.placeholder(tf.int32, shape=[])
-        iter_limit = FLAGS.max_iter
-        num_iter_used = 1
+        #iter_limit = FLAGS.max_iter
+        iter_limit = tf.placeholder(tf.int32, shape=[])
+        num_iter_used = tf.constant(1)
         for iter_count in range(1, FLAGS.max_iter):
             # Generate augmented versions of input and forward propogate
             # Unfortunately, we have to do this every time, even if we have
@@ -349,7 +349,7 @@ def main(_):
 
             time_start_session = time.time()
             logging.info('Starting to load models after {} seconds'.format(
-                time_start_session))
+                time_start_session - time_start_script))
 
             time_start_loading_models = time.time()
             for model in model_stack.models:
@@ -362,7 +362,7 @@ def main(_):
             num_samples_shown = 0
             num_iter_tally = []
             logging.info('Starting to generate images after {} seconds'.format(
-                time_start_session))
+                time_start_session - time_start_script))
             for filenames, images in load_images(FLAGS.input_dir, batch_shape):
                 if num_samples_shown < 10:
                     local_iter_limit = FLAGS.max_iter
@@ -370,8 +370,12 @@ def main(_):
                     # More fancy code should go here!
                     local_iter_limit = FLAGS.max_iter
 
-                adv_images = sess.run(x_adv, feed_dict={x_input: images})
+                adv_images, batch_num_iter = sess.run(
+                    [x_adv, num_iter_used],
+                    feed_dict={x_input: images, iter_limit: local_iter_limit})
                 save_images(adv_images, filenames, FLAGS.output_dir)
+
+                num_iter_tally.append(batch_num_iter)
 
                 num_samples_shown += FLAGS.batch_size
                 if (num_samples_shown + 1) % 100 == 0:
