@@ -311,7 +311,7 @@ def main(_):
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
             scaled_signed_grad = eps * tf.sign(tf.gradients(cross_entropy, x)[0])
-            x_next = tf.stop_gradient(x_adv + scaled_signed_grad)
+            x_next = tf.stop_gradient(x + scaled_signed_grad)
             x_next = tf.clip_by_value(x_next, x_min, x_max)
             return x_next
 
