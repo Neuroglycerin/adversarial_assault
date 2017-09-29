@@ -268,10 +268,10 @@ def main(_):
                     x,
                     pre_resize_fn=None,
                     post_resize_fn=augment_batch_post_resize)
-                model_logits = model.weight * sum(model_logits) / len(model_logits)
+                model_logits = model.weight * tf.reduce_mean(tf.stack(model_logits, axis=-1), axis=-1)
                 logits_list.append(model_logits)
                 total_mass += model.weight
-            logits = sum(logits_list) / total_mass
+            logits = tf.reduce_sum(tf.stack(logits_list, axis=-1), axis=-1) / total_mass
             if FLAGS.num_aug > 1:
                 assert FLAGS.batch_size == 1
                 logits = tf.reduce_mean(logits, axis=0, keep_dims=True)

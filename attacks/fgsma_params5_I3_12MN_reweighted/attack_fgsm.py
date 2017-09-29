@@ -261,10 +261,10 @@ def main(_):
             model_logits = model.weight * tf.reduce_mean(tf.stack(model_logits, axis=-1), axis=-1)
             logits_list += [model_logits]
             total_mass += model.weight
-        logits = tf.reduce_mean(tf.stack(logits_list, axis=-1), axis=-1)
+        logits = tf.reduce_sum(tf.stack(logits_list, axis=-1), axis=-1) / total_mass
         if FLAGS.num_aug > 1:
+            assert FLAGS.batch_size == 1
             logits = tf.reduce_mean(logits, axis=0, keep_dims=True)
-        logits /= total_mass
 
         cross_entropy = tf.losses.softmax_cross_entropy(label_weights, logits)
 
