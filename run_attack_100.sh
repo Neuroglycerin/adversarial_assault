@@ -39,7 +39,7 @@ touch "${OUTPUT_FILE}"
 
 echo "Doing untargeted attacks"
 for attack in "${ATTACKS_DIR}"/*; do
-    if [ ! -d attack ]; then
+    if [ ! -d ${attack} ]; then
         continue
     fi
     echo "Preparing working directory: ${WORKING_DIR}"
@@ -53,7 +53,7 @@ for attack in "${ATTACKS_DIR}"/*; do
     cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
     cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
-    cp -R "${ATTACKS_DIR}/${attack}" "${WORKING_DIR}/attacks"
+    cp -R "${attack}" "${WORKING_DIR}/attacks"
 
     echo "Running ${attack} on 100 sample images for the first time"
     python "${SCRIPT_DIR}/run_attack_100.py" \
@@ -91,7 +91,7 @@ touch "${OUTPUT_FILE}"
 
 echo "Doing targeted attacks"
 for attack in ${ATTACKS_DIR}/*; do
-    if [ ! -d attack ]; then
+    if [ ! -d ${attack} ]; then
         continue
     fi
     echo "Preparing working directory: ${WORKING_DIR}"
@@ -106,7 +106,7 @@ for attack in ${ATTACKS_DIR}/*; do
     cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
     cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
-    cp -R "${TARGETED_ATTACKS_DIR}/${attack}" "${WORKING_DIR}/targeted_attacks"
+    cp -R "${attack}" "${WORKING_DIR}/targeted_attacks"
 
     echo "Running ${attack} on 100 sample images for the first time"
     python "${SCRIPT_DIR}/run_attack_100.py" \
