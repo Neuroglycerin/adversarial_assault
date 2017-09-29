@@ -361,6 +361,7 @@ def main(_):
             time_start_generating = time.time()
             num_samples_shown = 0
             num_iter_tally = []
+            last_report_at = 0
             logging.info('Starting to generate images after {} seconds'.format(
                 time_start_session - time_start_script))
             for filenames, images in load_images(FLAGS.input_dir, batch_shape):
@@ -378,7 +379,7 @@ def main(_):
                 num_iter_tally.append(batch_num_iter)
 
                 num_samples_shown += FLAGS.batch_size
-                if (num_samples_shown + 1) % 100 == 0:
+                if num_samples_shown // 100 > last_report // 100:
                     tally = np.array(num_iter_tally)
                     logging.info('After {} samples: Took {} sec/sample. '
                                  'Using {}+/-{} iterations.'.format(
@@ -388,6 +389,10 @@ def main(_):
                                     np.std(tally),
                                     )
                                  )
+                    last_report_at = num_samples_shown
+
+            logging.info('Finished with internal duration of {} seconds'.format(
+                time.time() - time_start_script))
 
 
 if __name__ == '__main__':
