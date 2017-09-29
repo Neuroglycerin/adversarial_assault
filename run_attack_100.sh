@@ -31,6 +31,7 @@ fi
 # be overwritten.
 WORKING_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100working_"${MAX_EPSILON}"}
 
+mkdir -p "${WORKING_DIR}"
 cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
 cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
