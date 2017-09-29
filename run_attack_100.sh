@@ -3,6 +3,8 @@
 # exit on first error
 set -e
 
+MAX_EPSILON="$1"
+
 # directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -10,7 +12,6 @@ ATTACKS_DIR="${SCRIPT_DIR}/attacks"
 TARGETED_ATTACKS_DIR="${SCRIPT_DIR}/targeted_attacks"
 DATASET_DIR="${SCRIPT_DIR}/dataset/100images"
 DATASET_METADATA_FILE="${SCRIPT_DIR}/dataset/dev_dataset_100.csv"
-MAX_EPSILON=16
 
 mkdir -p "${ATTACKS_DIR}"
 mkdir -p "${TARGETED_ATTACKS_DIR}"
@@ -20,7 +21,7 @@ touch "${TARGETED_ATTACKS_DIR}/placeholder"
 # Prepare working directory and copy all necessary files.
 # In particular copy attacks defenses and dataset, so originals won't
 # be overwritten.
-WORKING_DIR=${1:-"$(dirname "${SCRIPT_DIR}")"/100working}
+WORKING_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100working_"${MAX_EPSILON}"}
 mkdir -p "${WORKING_DIR}"
 
 echo "Preparing working directory: ${WORKING_DIR}"
