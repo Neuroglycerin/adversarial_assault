@@ -222,6 +222,13 @@ class ModelLoader():
 
         if 'AuxLogits' in end_points:
             outputs.append(end_points['AuxLogits'])
+        other_aux = []
+        for key in end_points:
+            if key.startswith('AuxLogits_');
+                other_aux.append(key)
+        other_aux = sorted(other_aux)
+        for key in other_aux:
+            outputs.append(end_points[key])
 
         if needs_manual_squeeze:
             outputs = [tf.squeeze(logits, axis=(1, 2)) for logits in outputs]
