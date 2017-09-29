@@ -31,10 +31,6 @@ fi
 # be overwritten.
 WORKING_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100working_"${MAX_EPSILON}"}
 
-mkdir -p "${WORKING_DIR}"
-cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
-cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
-
 OUTPUT_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100output
 mkdir -p "${OUTPUT_DIR}"
 
@@ -53,6 +49,9 @@ for attack in "${ATTACKS_DIR}"/*; do
     touch "${WORKING_DIR}/attacks/placeholder"
     mkdir -p "${WORKING_DIR}/targeted_attacks"
     touch "${WORKING_DIR}/targeted_attacks/placeholder"
+    mkdir -p "${WORKING_DIR}/dataset"
+    cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
+    cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
     cp -R "${ATTACKS_DIR}/${attack}" "${WORKING_DIR}/attacks"
 
@@ -103,6 +102,7 @@ for attack in ${ATTACKS_DIR}/*; do
     touch "${WORKING_DIR}/attacks/placeholder"
     mkdir -p "${WORKING_DIR}/targeted_attacks"
     touch "${WORKING_DIR}/targeted_attacks/placeholder"
+    mkdir -p "${WORKING_DIR}/dataset"
     cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
     cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
