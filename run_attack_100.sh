@@ -29,9 +29,9 @@ fi
 # Prepare working directory and copy all necessary files.
 # In particular copy attacks defenses and dataset, so originals won't
 # be overwritten.
-WORKING_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100working_"${MAX_EPSILON}"}
+WORKING_DIR="$(dirname "${SCRIPT_DIR}")"/100working_"${MAX_EPSILON}"
 
-OUTPUT_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100output
+OUTPUT_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100output}
 mkdir -p "${OUTPUT_DIR}"
 
 OUTPUT_FILE="${OUTPUT_DIR}/duration_attack.csv"
