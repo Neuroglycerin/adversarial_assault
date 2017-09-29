@@ -71,6 +71,7 @@ for attack in "${ATTACKS_DIR}"/*; do
         ${GPU_FLAG}
 
     sudo rm -rf "${WORKING_DIR}/intermediate_results"
+    mkdir -p "${WORKING_DIR}/intermediate_results"
     sudo rm -rf "${WORKING_DIR}/output"
 
     echo "Running ${attack} on 100 sample images for the second time"
@@ -127,6 +128,7 @@ for attack in ${ATTACKS_DIR}/*; do
         ${GPU_FLAG}
 
     sudo rm -rf "${WORKING_DIR}/intermediate_results"
+    mkdir -p "${WORKING_DIR}/intermediate_results"
     sudo rm -rf "${WORKING_DIR}/output"
 
     echo "Running ${attack} on 100 sample images for the second time"
