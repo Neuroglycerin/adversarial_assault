@@ -275,6 +275,7 @@ def main(_):
             if FLAGS.num_aug > 1:
                 assert FLAGS.batch_size == 1
                 logits = tf.reduce_mean(logits, axis=0, keep_dims=True)
+            return logits
 
         # Collect logits using true stimulus, with(!) augmentations
         logits = update_logits(x_input)
