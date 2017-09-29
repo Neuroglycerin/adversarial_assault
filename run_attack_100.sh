@@ -31,7 +31,7 @@ fi
 # be overwritten.
 WORKING_DIR="$(dirname "${SCRIPT_DIR}")"/100working_"${MAX_EPSILON}"
 
-OUTPUT_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100output}
+OUTPUT_DIR=${2:-"$(dirname "${SCRIPT_DIR}")"/100output_"${MAX_EPSILON}"}
 mkdir -p "${OUTPUT_DIR}"
 
 OUTPUT_FILE="${OUTPUT_DIR}/duration_attack.csv"
