@@ -228,7 +228,6 @@ def main(_):
 
         # Prepare graph
         x_input = tf.placeholder(tf.float32, shape=batch_shape)
-        iter_limit = tf.placeholder(tf.int32, shape=[])
         x_max = tf.clip_by_value(x_input + eps, -1.0, 1.0)
         x_min = tf.clip_by_value(x_input - eps, -1.0, 1.0)
 
@@ -324,6 +323,8 @@ def main(_):
             label_is_right = tf.reduce_any(label_is_right, axis=0)
             return label_is_right
 
+        #iter_limit = tf.placeholder(tf.int32, shape=[])
+        iter_limit = FLAGS.max_iter
         num_iter_used = 1
         for iter_count in range(1, FLAGS.max_iter):
             # Generate augmented versions of input and forward propogate
@@ -369,9 +370,7 @@ def main(_):
                     # More fancy code should go here!
                     local_iter_limit = FLAGS.max_iter
 
-                adv_images, num_iter = sess.run([x_adv, num_iter_used],
-                                                feed_dict={x_input: images,
-                                                           iter_limit: local_iter_limit})
+                adv_images = sess.run(x_adv, feed_dict={x_input: images})
                 save_images(adv_images, filenames, FLAGS.output_dir)
 
                 num_samples_shown += FLAGS.batch_size
