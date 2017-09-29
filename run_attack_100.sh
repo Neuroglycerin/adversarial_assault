@@ -85,7 +85,7 @@ for attack in "${ATTACKS_DIR}"/*; do
         --epsilon="${MAX_EPSILON}" \
         ${GPU_FLAG}
 
-    tail -1 "${WORKING_DIR}/output/duration_attack.csv" >> "${OUTPUT_FILE}"
+    tail -1 "${WORKING_DIR}/output_dir/duration_attack.csv" >> "${OUTPUT_FILE}"
 done
 
 echo "Output is saved in '${OUTPUT_FILE}'"
@@ -142,7 +142,7 @@ for attack in ${ATTACKS_DIR}/*; do
         --epsilon="${MAX_EPSILON}" \
         ${GPU_FLAG}
 
-    tail -1 "${WORKING_DIR}/output/duration_targeted_attack.csv" >> "${OUTPUT_FILE}"
+    tail -1 "${WORKING_DIR}/output_dir/duration_targeted_attack.csv" >> "${OUTPUT_FILE}"
 done
 
 echo "Output is saved in '${OUTPUT_FILE}'"
