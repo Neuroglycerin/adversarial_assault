@@ -46,10 +46,14 @@ for attack in "${ATTACKS_DIR}"/*; do
     sudo rm -rf "${WORKING_DIR}"
     mkdir -p "${WORKING_DIR}"
     mkdir -p "${WORKING_DIR}/attacks"
-    touch "${WORKING_DIR}/attacks/placeholder"
     mkdir -p "${WORKING_DIR}/targeted_attacks"
-    touch "${WORKING_DIR}/targeted_attacks/placeholder"
+    mkdir -p "${WORKING_DIR}/defenses"
     mkdir -p "${WORKING_DIR}/dataset"
+    mkdir -p "${WORKING_DIR}/intermediate_results"
+    mkdir -p "${WORKING_DIR}/output_dir"
+
+    touch "${WORKING_DIR}/attacks/placeholder"
+    touch "${WORKING_DIR}/targeted_attacks/placeholder"
     cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
     cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
@@ -97,12 +101,15 @@ for attack in ${ATTACKS_DIR}/*; do
     echo "Preparing working directory: ${WORKING_DIR}"
     sudo rm -rf "${WORKING_DIR}"
     mkdir -p "${WORKING_DIR}"
-
     mkdir -p "${WORKING_DIR}/attacks"
-    touch "${WORKING_DIR}/attacks/placeholder"
     mkdir -p "${WORKING_DIR}/targeted_attacks"
-    touch "${WORKING_DIR}/targeted_attacks/placeholder"
+    mkdir -p "${WORKING_DIR}/defenses"
     mkdir -p "${WORKING_DIR}/dataset"
+    mkdir -p "${WORKING_DIR}/intermediate_results"
+    mkdir -p "${WORKING_DIR}/output_dir"
+
+    touch "${WORKING_DIR}/attacks/placeholder"
+    touch "${WORKING_DIR}/targeted_attacks/placeholder"
     cp -R "${DATASET_DIR}"/* "${WORKING_DIR}/dataset"
     cp "${DATASET_METADATA_FILE}" "${WORKING_DIR}/dataset.csv"
 
