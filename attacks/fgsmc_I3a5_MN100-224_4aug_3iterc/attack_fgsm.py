@@ -326,7 +326,7 @@ def main(_):
             cross_entropy = tf.losses.softmax_cross_entropy(label_weights, local_logits)
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
-            alpha = eps / tf.sqrt(tf.cast(iter_num + 1., dtype=tf.float32))
+            alpha = eps / tf.sqrt(tf.cast(iter_num, dtype=tf.float32) + 1)
             scaled_signed_grad = alpha * tf.sign(tf.gradients(cross_entropy, x)[0])
             x_next = tf.stop_gradient(x + scaled_signed_grad)
             x_next = tf.clip_by_value(x_next, x_min, x_max)
