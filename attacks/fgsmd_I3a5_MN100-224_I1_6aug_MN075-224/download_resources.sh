@@ -21,4 +21,5 @@ mkdir -p "${MODELS_OUT_DIR}"
 
 cp -r "${CUSTOM_MODELS_SOURCE_DIR}"/inception_v3_5aux_299 "${MODELS_OUT_DIR}"
 cp -r "${MODELS_SOURCE_DIR}"/mobilenet_v1_100_224 "${MODELS_OUT_DIR}"
+cp -r "${MODELS_SOURCE_DIR}"/mobilenet_v1_075_224 "${MODELS_OUT_DIR}"
 cp -r "${MODELS_SOURCE_DIR}"/inception_v1 "${MODELS_OUT_DIR}"
