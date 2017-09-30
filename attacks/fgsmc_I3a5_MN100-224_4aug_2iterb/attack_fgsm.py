@@ -283,7 +283,7 @@ def main(_):
                 else:
                     model_logits = tf.concat(model_logits, axis=0)
                 model_logits *= model.weight / num_logits_for_model
-                logits_list += model_logits
+                logits_list.append(model_logits)
                 total_mass += model.weight
             logits_stack = tf.concat(logits_list, axis=0) / total_mass
             return logits_stack
