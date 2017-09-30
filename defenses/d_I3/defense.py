@@ -20,6 +20,11 @@ from scipy.misc import imread
 
 import tensorflow as tf
 
+from slim.preprocessing import inception_preprocessing
+from slim.layers import colorspace_transform
+
+import model_loader
+import image_utils
 
 
 tf.flags.DEFINE_string(
