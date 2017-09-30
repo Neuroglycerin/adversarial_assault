@@ -226,7 +226,7 @@ class ModelLoader():
         for key in end_points:
             if key.startswith('AuxLogits_'):
                 other_aux.append(key)
-        other_aux = reverse(sorted(other_aux))
+        other_aux = sorted(other_aux, reverse=True)
         for key in other_aux:
             outputs.append(end_points[key])
 
