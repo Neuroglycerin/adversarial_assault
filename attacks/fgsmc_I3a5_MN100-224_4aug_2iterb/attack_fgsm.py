@@ -275,13 +275,14 @@ def main(_):
                     x,
                     pre_resize_fn=None,
                     post_resize_fn=augment_batch_post_resize)
+                num_logits_for_model = len(model_logits)
                 if FLAGS.num_aug > 1:
                     assert FLAGS.batch_size == 1
                     model_logits = tf.stack(model_logits, axis=0)
                     model_logits = tf.reduce_mean(model_logits, axis=1, keep_dims=False)
                 else:
                     model_logits = tf.concat(model_logits, axis=0)
-                model_logits *= model.weight / len(model_logits)
+                model_logits *= model.weight / num_logits_for_model
                 logits_list += model_logits
                 total_mass += model.weight
             logits_stack = tf.concat(logits_list, axis=0) / total_mass
