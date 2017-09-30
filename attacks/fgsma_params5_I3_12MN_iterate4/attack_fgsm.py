@@ -11,6 +11,8 @@ import numpy as np
 from PIL import Image
 
 import tensorflow as tf
+from tensorflow.python.ops import control_flow_ops
+
 from slim.preprocessing import inception_preprocessing
 from slim.layers import colorspace_transform
 
@@ -289,9 +291,10 @@ def main(_):
         needs_update = tf.ones([], dtype=tf.bool)
         for iter_count in range(FLAGS.max_iter):
             # Generate augmented versions of input and forward propogate
-            logits = tf.cond(needs_update,
-                             lambda: update_logits(x_adv),
-                             lambda: logits)
+            new_logits = tf.cond(needs_update,
+                                 lambda: update_logits(x_adv),
+                                 lambda: logits)
+            logits = control_flow_ops.merge([new_logits, logits])[0]
             # Check whether the current prediction is accurate
             label_is_right = test_accuracy(logits)
             # We always do the first step, otherwise the image is unchanged
@@ -301,7 +304,7 @@ def main(_):
             x_next = tf.cond(needs_update,
                              lambda: update_x(x_adv, logits),
                              lambda: x_adv)
-            x_adv = x_next
+            x_adv = control_flow_ops.merge([x_next, x_adv])[0]
 
         # Run computation
         with tf.Session() as sess:
