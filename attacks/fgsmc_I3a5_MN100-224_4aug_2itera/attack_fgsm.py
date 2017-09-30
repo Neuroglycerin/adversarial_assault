@@ -279,7 +279,7 @@ def main(_):
                     assert FLAGS.batch_size == 1
                     model_logits = [tf.reduce_mean(y, axis=0, keep_dims=True)
                                     for y in model_logits]
-                model_logits = [model.weight * y / len(model_logits)
+                model_logits = [tf.multiply(model.weight / len(model_logits), y)
                                 for y in model_logits]
                 logits_list.append(model_logits)
                 total_mass += model.weight
@@ -287,7 +287,7 @@ def main(_):
 
         # Collect logits using true stimulus, with(!) augmentations
         logits_list, total_mass = update_logits(x_input)
-        logits = sum(logits_list) / total_mass
+        logits = tf.reduce_sum(tf.stack(logits_list, axis=0), axis=0) / total_mass
 
         # Determine the true label
         preds = tf.nn.softmax(logits)
