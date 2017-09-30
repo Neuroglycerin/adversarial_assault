@@ -9,11 +9,11 @@ MODELS_DIR="${SCRIPT_DIR}/models"
 
 mkdir -p "${MODELS_DIR}"
 
-cd "${MODELS_DIR}"
-
-
 mkdir -p custom_models
-aws s3 cp s3://neuroglycerin-nips2017-models/custom_models ./custom_models --recursive
+aws s3 cp s3://neuroglycerin-nips2017-models/custom_models "${SCRIPT_DIR}/custom_models" --recursive
+
+
+cd "${MODELS_DIR}"
 
 
 ###############################################################################
