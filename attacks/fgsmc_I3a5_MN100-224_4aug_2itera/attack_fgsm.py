@@ -281,7 +281,7 @@ def main(_):
                                     for y in model_logits]
                 model_logits = [tf.multiply(model.weight / len(model_logits), y)
                                 for y in model_logits]
-                logits_list.append(model_logits)
+                logits_list += model_logits
                 total_mass += model.weight
             return logits_list, total_mass
 
