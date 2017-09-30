@@ -290,7 +290,9 @@ def main(_):
 
         # Collect logits using true stimulus, with(!) augmentations
         logits_stack = update_logits(x_input)
-        avg_logits = tf.reduce_sum(logits_stack, axis=0)
+
+        assert FLAGS.batch_size == 1
+        avg_logits = tf.reduce_sum(logits_stack, axis=0, keep_dims=True)
 
         # Determine the true label
         preds = tf.nn.softmax(avg_logits)
@@ -361,7 +363,7 @@ def main(_):
                                                label_is_right)
 
             # Maybe update x_adv
-            maybe_logits = tf.reduce_sum(maybe_logits_stack, axis=0)
+            maybe_logits = tf.reduce_sum(maybe_logits_stack, axis=0, keep_dims=True)
             logits = control_flow_ops.merge(
                 [maybe_logits, prev_logits]
                 )[0]
