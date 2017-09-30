@@ -352,10 +352,12 @@ def main(_):
         for iter_count in range(1, FLAGS.max_iter):
             # Generate augmented versions of input and forward propogate.
 
-            maybe_x_adv = control_flow_ops.switch(x_adv, should_run_update)[1]
-            maybe_logits_stack = update_logits(maybe_x_adv)
+            logits_stack_kept = control_flow_ops.switch(prev_logits_stack,
+                                                        should_run_update)[0]
+            logits_stack_changed = update_logits(
+                control_flow_ops.switch(x_adv, should_run_update)[1])
             logits_stack = control_flow_ops.merge(
-                [maybe_logits_stack, prev_logits_stack]
+                [logits_stack_changed, logits_stack_kept]
                 )[0]
 
             # Check whether the current prediction is accurate
@@ -365,14 +367,11 @@ def main(_):
                                                label_is_right)
 
             # Maybe update x_adv
-            maybe_logits = tf.reduce_sum(maybe_logits_stack, axis=0, keep_dims=True)
-            logits = control_flow_ops.merge(
-                [maybe_logits, prev_logits]
-                )[0]
+            logits = tf.reduce_sum(logits_stack, axis=0, keep_dims=True)
 
-            maybe_x_adv = update_x(maybe_x_adv, maybe_logits)
+            x_to_keep, x_to_change = control_flow_ops.switch(x_adv, should_run_update)
             x_adv = control_flow_ops.merge(
-                [maybe_x_adv, prev_x_adv]
+                [update_x(x_to_change, logits), x_to_keep]
                 )[0]
 
             prev_logits_stack = logits_stack
