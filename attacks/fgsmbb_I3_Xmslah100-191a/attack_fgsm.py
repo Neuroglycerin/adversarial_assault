@@ -235,7 +235,7 @@ def main(_):
             batch_size=FLAGS.batch_size,
             num_augmentations=FLAGS.num_aug)
         model_stack.add('inception_v3', 'models/inception_v3', im_size=299)
-        model_stack.add('xception_multiscale2lah_100_flab', 'models/xception_multiscale2lah_100_flab_191_adv', im_size=191)
+        model_stack.add('xception_multiscale2lah_100', 'models/xception_multiscale2lah_100_191_adv', im_size=191)
         #model_stack.add('mobilenet_v1_100', 'models/mobilenet_v1_100_224', im_size=224)
         #model_stack.add('mobilenet_v1_100', 'models/mobilenet_v1_100_192', im_size=192)
         #model_stack.add('mobilenet_v1_100', 'models/mobilenet_v1_100_160', im_size=160)
