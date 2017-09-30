@@ -369,10 +369,10 @@ def main(_):
             # Maybe update x_adv
             logits = tf.reduce_sum(logits_stack, axis=0, keep_dims=True)
 
-            x_to_keep, x_to_change = control_flow_ops.switch(x_adv, should_run_update)
-            x_adv = control_flow_ops.merge(
-                [update_x(x_to_change, logits), x_to_keep]
-                )[0]
+            # Maybe update x_adv
+            x_adv = tf.cond(should_run_update,
+                            lambda: update_x(x_adv, logits),
+                            lambda: x_adv)
 
             prev_logits_stack = logits_stack
             prev_logits = logits
