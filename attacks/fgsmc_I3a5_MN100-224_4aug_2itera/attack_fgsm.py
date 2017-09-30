@@ -275,7 +275,6 @@ def main(_):
                     x,
                     pre_resize_fn=None,
                     post_resize_fn=augment_batch_post_resize)
-                model_logits = model.weight * sum(model_logits) / len(model_logits)
                 if FLAGS.num_aug > 1:
                     assert FLAGS.batch_size == 1
                     model_logits = [tf.reduce_mean(y, axis=0, keep_dims=True)
