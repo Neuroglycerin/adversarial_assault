@@ -275,8 +275,13 @@ def main(_):
                     x,
                     pre_resize_fn=None,
                     post_resize_fn=augment_batch_post_resize)
-                model_logits = [model.weight / len(model_logits) * \
-                                maybe_average_augs(x) for x in model_logits]
+                model_logits = model.weight * sum(model_logits) / len(model_logits)
+                if FLAGS.num_aug > 1:
+                    assert FLAGS.batch_size == 1
+                    model_logits = [tf.reduce_mean(y, axis=0, keep_dims=True)
+                                    for y in model_logits]
+                model_logits = [model.weight * y / len(model_logits)
+                                for y in model_logits]
                 logits_list.append(model_logits)
                 total_mass += model.weight
             return logits_list, total_mass
