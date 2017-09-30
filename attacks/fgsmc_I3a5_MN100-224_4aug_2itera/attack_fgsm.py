@@ -329,7 +329,7 @@ def main(_):
 
         def test_accuracy(set_of_logits):
             stacked_logits = tf.concat(set_of_logits, axis=0)
-            predicted_label = tf.argmax(logits, axis=-1, output_type=tf.int32)
+            predicted_label = tf.argmax(stacked_logits, axis=-1, output_type=tf.int32)
             label_is_right = tf.equal(top_label_index, predicted_label)
             any_label_is_right = tf.reduce_any(label_is_right, axis=0)
             return any_label_is_right
