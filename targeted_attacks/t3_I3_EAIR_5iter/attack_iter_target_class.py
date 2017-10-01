@@ -305,7 +305,7 @@ def main(_):
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
             initial_step_length = eps / tf.sqrt(tf.cast(iter_limit, tf.float32))
-            alpha = initial_step_length * tf.pow(FLAGS.update_decay_rate, iter_num)
+            alpha = initial_step_length * tf.pow(FLAGS.update_decay_rate, tf.cast(iter_num, tf.float32))
             signed_grad = tf.sign(tf.gradients(cross_entropy, x)[0])
             if update_coefficients is None:
                 update_coefficients = tf.ones_like(signed_grad)
