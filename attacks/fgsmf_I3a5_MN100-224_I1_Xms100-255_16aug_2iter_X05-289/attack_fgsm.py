@@ -243,6 +243,7 @@ def main(_):
         model_stack.add('mobilenet_v1_100', 'models/mobilenet_v1_100_224', im_size=224)
         model_stack.add('inception_v1', 'models/inception_v1', im_size=224)
         model_stack.add('xception_multiscale2_flab', 'models/xception_multiscale2_flab_255', im_size=255)
+        model_stack.add('xception_050', 'models/xception_050_289', im_size=289)
 
 
         def maybe_average_augs(x):
