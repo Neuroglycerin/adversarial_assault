@@ -449,7 +449,7 @@ def main(_):
             logging.info('Starting to generate images after {} seconds'.format(
                 time_start_generating - time_start_script))
 
-            num_img = get_number_of_images(input_dir):
+            num_img = get_number_of_images(input_dir)
             for filenames, images in load_images(FLAGS.input_dir, batch_shape):
                 target_class_for_batch = (
                     [all_images_taget_class[n] for n in filenames]
