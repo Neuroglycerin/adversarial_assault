@@ -321,12 +321,13 @@ def main(_):
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
             grad = tf.gradients(cross_entropy, x)[0]
+            num_el = tf.size(grad)
             abs_grad = tf.abs(grad)
-            _, sort_indices = tf.nn.top_k(tf.reshape(grad, [-1]), k=grad.size, sorted=True)
-            unit_lengths = (grad.size - tf.range(grad.size)) / grad.size
+            _, sort_indices = tf.nn.top_k(tf.reshape(grad, [-1]), k=num_el, sorted=True)
+            unit_lengths = tf.cast(num_el - tf.range(num_el), tf.float32) / num_el
             updates = tf.scatter_nd(tf.expand_dims(sort_indices, -1),
                                     unit_lengths,
-                                    [grad.size])
+                                    [num_el])
             updates = tf.reshape(updates, grad.shape)
             scaled_signed_grad = eps * updates * tf.sign(grad)
             x_next = tf.stop_gradient(x + scaled_signed_grad)
