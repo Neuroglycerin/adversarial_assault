@@ -386,8 +386,8 @@ def main(_):
                 adv_images, batch_num_iter = sess.run(
                     [x_adv, num_iter_used],
                     feed_dict={x_input: images,
-                               iter_limit: local_iter_limit
-                               target_class_input: target_class_for_batch
+                               iter_limit: local_iter_limit,
+                               target_class_input: target_class_for_batch,
                                }
                     )
                 save_images(adv_images, filenames, FLAGS.output_dir)
