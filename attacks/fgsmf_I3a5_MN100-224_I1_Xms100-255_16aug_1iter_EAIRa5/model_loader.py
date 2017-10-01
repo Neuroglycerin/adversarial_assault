@@ -134,7 +134,7 @@ class ModelLoader():
             if len(parts) < 2:
                 ckpt_step_numbers.append(-1)
             else:
-                ckpt_step_numbers.append(int(parts[1]))
+                ckpt_step_numbers.append(int(parts[1].split('.')[0]))
         highest_step = max(ckpt_step_numbers)
         # Compare ints, select the highest
         for fname, ckpt_step_number in zip(files, ckpt_step_numbers):
