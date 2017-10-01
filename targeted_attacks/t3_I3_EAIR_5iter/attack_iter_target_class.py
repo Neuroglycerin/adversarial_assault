@@ -375,7 +375,7 @@ def main(_):
 
         # Project vector to extremities
         adv_vector = x_adv - x_input
-        max_delta = tf.reduce_maximum(tf.abs(x_input - x_adv))
+        max_delta = tf.reduce_max(tf.abs(x_input - x_adv))
         # Now unit vector under inf norm
         adv_vector = adv_vector / max_delta
         # We project as far as possible in this direction
