@@ -160,8 +160,11 @@ def augment_single_post_resize(image, index=None):
     rotation_max_angle = 5.8
 
     # Rotate
-    if index > 0:
-        image = image_utils.random_rotate(image, max_angle=rotation_max_angle)
+    image = tf.cond(
+        tf.equal(index, 0),
+        image,
+        image_utils.random_rotate(image, max_angle=rotation_max_angle),
+        )
 
     # Randomly flip the image horizontally
     if index is None:
