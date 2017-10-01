@@ -210,7 +210,11 @@ def main(_):
             num_augmentations=FLAGS.num_aug)
         model_stack.add('inception_resnet_v2', 'models/ens_adv_inception_resnet_v2', im_size=299)
 
-        defender = model_loader.ModelLoader('deadversiser_v3', 'models/deadversiser_v3')
+        defender_fn = nets_factory.get_network_fn(
+            'deadversiser_v3',
+            num_classes=num_classes,
+            is_training=False,
+            reuse=False)
 
         def update_logits(x):
             ## Now we generate new inputs with which to check whether we hit the
@@ -245,7 +249,7 @@ def main(_):
             return logits_stack
 
         # Collect logits
-        x_defended = defender.get_output(x_input)[0]
+        x_defended, _ = defender_fn(x_input)
         logits_stack = update_logits(x_defended)
 
         assert FLAGS.batch_size == 1
@@ -261,6 +265,11 @@ def main(_):
                 time_start_session - time_start_script))
 
             time_start_loading_models = time.time()
+
+            saver = tf.train.Saver(
+                tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='deadversarialiser'))
+            saver.restore(sess, 'models/deadversiser_v3/model.ckpt-46995')
+
             for model in model_stack.models:
                 model.restore(sess)
             time_end_loading_models = time.time()
