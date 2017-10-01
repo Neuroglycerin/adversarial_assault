@@ -230,7 +230,7 @@ def main(_):
     # eps is a difference between pixels so it should be in [0, 2] interval.
     # Renormalizing epsilon from [0, 255] to [0, 2].
     eps = FLAGS.max_epsilon * 2.0 / 255.0
-    initial_step_length = eps / math.sqrt(FLAGS.max_iter)
+    #initial_step_length = eps / math.sqrt(FLAGS.max_iter)
     batch_shape = [FLAGS.batch_size, FLAGS.image_height, FLAGS.image_width, 3]
     num_classes = 1001
 
@@ -245,6 +245,7 @@ def main(_):
         tf.set_random_seed(9349008288)
 
         # Prepare graph
+        iter_limit = tf.placeholder(tf.int32, shape=[])
         x_input = tf.placeholder(tf.float32, shape=batch_shape)
         x_max = tf.clip_by_value(x_input + eps, -1.0, 1.0)
         x_min = tf.clip_by_value(x_input - eps, -1.0, 1.0)
@@ -303,6 +304,7 @@ def main(_):
             cross_entropy = tf.losses.softmax_cross_entropy(label_weights, local_logits)
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
+            initial_step_length = eps / tf.sqrt(iter_limit)
             alpha = initial_step_length * tf.pow(FLAGS.update_decay_rate, iter_num)
             signed_grad = tf.sign(tf.gradients(cross_entropy, x)[0])
             if update_coefficients is None:
@@ -330,8 +332,6 @@ def main(_):
             return any_label_is_bad
 
 
-        #iter_limit = FLAGS.max_iter
-        iter_limit = tf.placeholder(tf.int32, shape=[])
         num_iter_used = tf.constant(1)
         should_run_update = tf.ones([], dtype=tf.bool)
         prev_logits_stack = logits_stack
