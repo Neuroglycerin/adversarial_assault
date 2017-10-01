@@ -304,7 +304,7 @@ def main(_):
             cross_entropy = tf.losses.softmax_cross_entropy(label_weights, local_logits)
             # First, we manipulate the image based on the gradients of the
             # cross entropy we just derived
-            initial_step_length = eps / tf.sqrt(iter_limit)
+            initial_step_length = eps / tf.sqrt(tf.cast(iter_limit, tf.float32))
             alpha = initial_step_length * tf.pow(FLAGS.update_decay_rate, iter_num)
             signed_grad = tf.sign(tf.gradients(cross_entropy, x)[0])
             if update_coefficients is None:
