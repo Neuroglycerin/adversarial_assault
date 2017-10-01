@@ -203,7 +203,9 @@ def augment_batch_post_resize(x):
 
     # Random contrast
     contrast_max_ratio = 1.05
-    images = random_contrast(images, (1. / contrast_max_ratio), contrast_max_ratio)
+    images = image_utils.random_contrast(images,
+                                         (1. / contrast_max_ratio),
+                                         contrast_max_ratio)
 
     # Add some random noise to the image
     unit_change = 2.0 / 255.0  # this level is equivalent to 1 utf8 change
