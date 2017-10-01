@@ -14,13 +14,9 @@ INPUT_DIR=$1
 OUTPUT_DIR=$2
 MAX_EPSILON=$3
 
-# For how many iterations run this attack
-NUM_ITERATIONS=5
-
 pip install -e slim --user
 
 python attack_iter_target_class.py \
   --input_dir="${INPUT_DIR}" \
   --output_dir="${OUTPUT_DIR}" \
-  --max_epsilon="${MAX_EPSILON}" \
-  --max_iter="${NUM_ITERATIONS}"
+  --max_epsilon="${MAX_EPSILON}"
