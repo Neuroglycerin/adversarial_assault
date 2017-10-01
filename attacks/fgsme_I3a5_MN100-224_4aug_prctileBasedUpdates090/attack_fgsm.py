@@ -325,7 +325,7 @@ def main(_):
             num_el_to_update = tf.cast(num_el, tf.float32) * tf.cast(FLAGS.fraction_to_update, tf.float32)
             num_el_to_update = tf.cast(tf.ceil(num_el_to_update), tf.int32)
             abs_grad = tf.abs(grad)
-            _, sort_indices = tf.nn.top_k(tf.reshape(grad, [-1]), num_el_to_update)
+            _, sort_indices = tf.nn.top_k(tf.reshape(abs_grad, [-1]), num_el_to_update)
             unit_lengths = tf.cast(num_el - tf.range(num_el), dtype=tf.float32) \
                             / tf.cast(num_el, dtype=tf.float32)
             updates = tf.scatter_nd(tf.expand_dims(sort_indices, -1),
