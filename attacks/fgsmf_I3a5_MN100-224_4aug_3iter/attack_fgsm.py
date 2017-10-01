@@ -314,7 +314,7 @@ def main(_):
         #label_weights = tf.stop_gradient(label_weights)
         top_label_index = tf.stop_gradient(top_label_index)
 
-        def update_x(x, local_logits):
+        def update_x(x, local_logits, iter_num=tf.constant(0)):
             # First, we manipulate the image based on the output from the last
             # input image
             cross_entropy = tf.losses.softmax_cross_entropy(label_weights, local_logits)
@@ -378,7 +378,7 @@ def main(_):
 
             # Maybe update x_adv
             x_adv = tf.cond(should_run_update,
-                            lambda: update_x(x_adv, logits),
+                            lambda: update_x(x_adv, logits, iter_count),
                             lambda: x_adv)
 
             prev_logits_stack = logits_stack
