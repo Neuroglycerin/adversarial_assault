@@ -53,7 +53,7 @@ tf.flags.DEFINE_integer(
     'num_aug', 1, 'Number of augmented repetitions of the image to each net.')
 
 tf.flags.DEFINE_integer(
-    'max_iter', 1, 'Maximum number of iterations.')
+    'max_iter', 5, 'Maximum number of iterations.')
 
 tf.flags.DEFINE_float(
     'time_limit_per_100_samples', 500., 'Time limit in seconds per 100 samples.')
