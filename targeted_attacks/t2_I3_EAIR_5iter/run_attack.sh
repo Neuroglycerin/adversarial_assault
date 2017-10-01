@@ -17,6 +17,8 @@ MAX_EPSILON=$3
 # For how many iterations run this attack
 NUM_ITERATIONS=5
 
+pip install -e slim --user
+
 python attack_iter_target_class.py \
   --input_dir="${INPUT_DIR}" \
   --output_dir="${OUTPUT_DIR}" \
