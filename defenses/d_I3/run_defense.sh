@@ -12,7 +12,7 @@
 INPUT_DIR=$1
 OUTPUT_FILE=$2
 
-pip install -e tensorflow-slim --user
+pip install -e slim --user
 
 python defense.py \
   --input_dir="${INPUT_DIR}" \
