@@ -19,6 +19,7 @@ from PIL import Image
 from scipy.misc import imread
 
 import tensorflow as tf
+from tensorflow.python.platform import tf_logging as logging
 
 from slim.preprocessing import inception_preprocessing
 from slim.layers import colorspace_transform
