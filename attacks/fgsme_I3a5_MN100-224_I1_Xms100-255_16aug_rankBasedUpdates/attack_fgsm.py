@@ -324,7 +324,8 @@ def main(_):
             num_el = tf.size(grad)
             abs_grad = tf.abs(grad)
             _, sort_indices = tf.nn.top_k(tf.reshape(grad, [-1]), k=num_el, sorted=True)
-            unit_lengths = tf.cast(num_el - tf.range(num_el), tf.float32) / num_el
+            unit_lengths = tf.cast(num_el - tf.range(num_el), dtype=tf.float32) \
+                            / tf.cast(num_el, dtype=tf.float32)
             updates = tf.scatter_nd(tf.expand_dims(sort_indices, -1),
                                     unit_lengths,
                                     [num_el])
