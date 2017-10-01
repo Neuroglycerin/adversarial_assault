@@ -99,7 +99,7 @@ def augment_single_pre_resize(image, source_space='rgb'):
     image = augment_single_post_resize(image)
 
     # Crop
-    image = image_utils.random_crop(image)
+    #image = image_utils.random_crop(image)
 
     # Parameters
     brightness_max_delta = 0.06 * 2
@@ -206,7 +206,7 @@ def main(_):
             # Now we generate new inputs with which to check whether we hit the
             # target, and if not collect gradients again
             # First, transform the image into flab space for preprocessing
-            x_adv_flab = colorspace_transform.tf_rgb_to_flab(x_adv)
+            x = colorspace_transform.tf_rgb_to_flab(x)
             # We will do all the pre-resize operations in this colorspace
             pre_resize_fn = lambda x: augment_batch_pre_resize(x, source_space='flab')
             # Then we transform back to RGB space before adding pixel-wise noise
@@ -218,7 +218,7 @@ def main(_):
             total_mass = 0
             for model in model_stack.models:
                 model_logits = model.get_logits(
-                    x_adv_flab,
+                    x,
                     pre_resize_fn=pre_resize_fn,
                     post_resize_fn=post_resize_fn)
                 num_logits_for_model = len(model_logits)
