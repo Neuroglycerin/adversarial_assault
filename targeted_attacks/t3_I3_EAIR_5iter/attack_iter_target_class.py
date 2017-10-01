@@ -363,7 +363,7 @@ def main(_):
             x_adv, update_coefficients, prev_grad = tf.cond(
                 should_run_update,
                 lambda: update_x(x_adv, logits, update_coefficients, prev_grad, iter_count),
-                lambda: x_adv, update_coefficients, prev_grad)
+                lambda: (x_adv, update_coefficients, prev_grad))
 
             prev_logits_stack = logits_stack
             prev_logits = logits
