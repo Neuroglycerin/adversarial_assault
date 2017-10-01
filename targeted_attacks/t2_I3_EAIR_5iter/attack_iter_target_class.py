@@ -16,8 +16,8 @@ from PIL import Image
 
 import tensorflow as tf
 from tensorflow.python.ops import control_flow_ops
-
 from tensorflow.python.platform import tf_logging as logging
+
 from slim.preprocessing import inception_preprocessing
 from slim.layers import colorspace_transform
 
