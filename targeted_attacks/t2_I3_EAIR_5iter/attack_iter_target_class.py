@@ -246,7 +246,7 @@ def main(_):
             batch_size=FLAGS.batch_size,
             num_augmentations=FLAGS.num_aug)
         model_stack.add('inception_v3', 'models/inception_v3', im_size=299)
-        model_stack.add('ens_adv_inception_resnet_v2', 'models/ens_adv_inception_resnet_v2', im_size=299)
+        model_stack.add('inception_resnet_v2', 'models/ens_adv_inception_resnet_v2', im_size=299)
 
 
         def update_logits(x):
