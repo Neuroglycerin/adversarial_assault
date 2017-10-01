@@ -178,6 +178,9 @@ def random_brightness(images, max_delta, seed=None, source_space='rgb'):
 
 
 def adjust_contrast(images, contrast_factor):
+    # Add extra dimensions to the factor, so it is the same across 3D space
+    for i in range(3):
+        contrast_factor = tf.expand_dims(contrast_factor, axis=-1)
     # Average intensity across x, y, channels
     mu = tf.reduce_mean(
             tf.reduce_mean(
