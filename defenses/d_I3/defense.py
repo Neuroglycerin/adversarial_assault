@@ -200,6 +200,9 @@ def main(_):
         # Fix seed for reproducibility
         tf.set_random_seed(9349008288)
 
+        # Prepare graph
+        x_input = tf.placeholder(tf.float32, shape=batch_shape)
+
         model_stack = model_loader.ModelLoaderStack(
             batch_size=FLAGS.batch_size,
             num_augmentations=FLAGS.num_aug)
