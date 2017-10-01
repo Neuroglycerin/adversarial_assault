@@ -50,10 +50,10 @@ tf.flags.DEFINE_integer(
     'batch_size', 1, 'How many images process at one time.')
 
 tf.flags.DEFINE_integer(
-    'num_aug', 3, 'Number of augmented repetitions of the image to each net.')
+    'num_aug', 1, 'Number of augmented repetitions of the image to each net.')
 
 tf.flags.DEFINE_integer(
-    'max_iter', 20, 'Maximum number of iterations.')
+    'max_iter', 15, 'Maximum number of iterations.')
 
 tf.flags.DEFINE_float(
     'time_limit_per_100_samples', 500., 'Time limit in seconds per 100 samples.')
@@ -298,7 +298,7 @@ def main(_):
                 model_logits = model.get_logits(
                     x,
                     pre_resize_fn=None,
-                    post_resize_fn=augment_batch_post_resize)
+                    post_resize_fn=None)
                 num_logits_for_model = len(model_logits)
                 for i in range(num_logits_for_model):
                     model_logits[i] *= aux_weights[i] / sum(aux_weights[:num_logits_for_model])
@@ -381,7 +381,6 @@ def main(_):
 
 
         num_iter_used = tf.constant(1)
-        should_run_update = tf.ones([], dtype=tf.bool)
         prev_logits_stack = logits_stack
         prev_logits = avg_logits
         prev_x_adv = x_adv
@@ -389,36 +388,20 @@ def main(_):
         for iter_count in range(1, FLAGS.max_iter):
             # Generate augmented versions of input and forward propogate.
 
-            logits_stack_kept = control_flow_ops.switch(prev_logits_stack,
-                                                        should_run_update)[0]
-            logits_stack_changed = update_logits(
-                control_flow_ops.switch(x_adv, should_run_update)[1])
-            logits_stack = control_flow_ops.merge(
-                [logits_stack_changed, logits_stack_kept]
-                )[0]
-
-            # Check whether the current prediction is accurate
-            have_time_for_one_more = tf.less(iter_count, iter_limit)
-            label_is_bad = test_accuracy(logits_stack)
-            should_run_update = tf.logical_and(have_time_for_one_more,
-                                               label_is_bad)
+            logits_stack = update_logits(x_adv)
 
             # Maybe update x_adv
             logits = tf.reduce_sum(logits_stack, axis=0, keep_dims=True)
 
             # Maybe update x_adv
-            x_adv, update_coefficients, prev_grad = tf.cond(
-                should_run_update,
-                lambda: update_x(x_adv, logits, update_coefficients, prev_grad, iter_count),
-                lambda: (x_adv, update_coefficients, prev_grad))
+            x_adv, update_coefficients, prev_grad = update_x(
+                x_adv, logits, update_coefficients, prev_grad, iter_count)
 
             prev_logits_stack = logits_stack
             prev_logits = logits
             prev_x_adv = x_adv
 
-            num_iter_used = tf.cond(should_run_update,
-                                    lambda: num_iter_used + 1,
-                                    lambda: num_iter_used)
+            num_iter_used = num_iter_used + 1
 
         # Project vector to extremities
         adv_vector = x_adv - x_input
@@ -457,22 +440,8 @@ def main(_):
                 target_class_for_batch = (
                     [all_images_taget_class[n] for n in filenames]
                     + [0] * (FLAGS.batch_size - len(filenames)))
-                if num_samples_shown < 10:
-                    local_iter_limit = FLAGS.max_iter
-                else:
-                    # More fancy code should go here!
-                    total_budget = num_img / 100 * FLAGS.time_limit_per_100_samples
-                    time_elapsed = time.time() - time_start_script
-                    time_remaining = total_budget - time_elapsed
 
-                    num_iter_so_far = sum(num_iter_tally)
-                    time_so_far = time_start_generating - time.time()
-                    time_per_iter = time_so_far / num_iter_so_far
-
-                    num_samples_remaining = num_img - num_samples_shown
-                    num_iters_remaining = time_remaining / time_per_iter
-                    local_iter_limit = int(num_iters_remaining / num_samples_remaining)
-                    local_iter_limit = min(local_iter_limit, FLAGS.max_iter)
+                local_iter_limit = FLAGS.max_iter
 
                 adv_images, batch_num_iter = sess.run(
                     [x_adv, num_iter_used],
