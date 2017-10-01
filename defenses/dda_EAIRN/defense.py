@@ -245,7 +245,7 @@ def main(_):
             return logits_stack
 
         # Collect logits
-        x_defended = defender.get_output(x_input)
+        x_defended = defender.get_output(x_input)[0]
         logits_stack = update_logits(x_defended)
 
         assert FLAGS.batch_size == 1
