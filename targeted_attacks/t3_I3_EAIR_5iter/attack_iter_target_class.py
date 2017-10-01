@@ -298,7 +298,7 @@ def main(_):
         assert FLAGS.batch_size == 1
         avg_logits = tf.reduce_sum(logits_stack, axis=0, keep_dims=True)
 
-        def update_x(x, local_logits, iter_num=tf.constant(0), update_coefficients=None, prev_grad=None):
+        def update_x(x, local_logits, update_coefficients, prev_grad, iter_num=tf.constant(0)):
             # First, we manipulate the image based on the output from the last
             # input image
             cross_entropy = tf.losses.softmax_cross_entropy(label_weights, local_logits)
@@ -307,15 +307,14 @@ def main(_):
             initial_step_length = eps / tf.sqrt(tf.cast(iter_limit, tf.float32))
             alpha = initial_step_length * tf.pow(FLAGS.update_decay_rate, tf.cast(iter_num, tf.float32))
             signed_grad = tf.sign(tf.gradients(cross_entropy, x)[0])
-            if update_coefficients is None:
-                update_coefficients = tf.ones_like(signed_grad)
-            elif prev_grad is None:
-                prev_grad = tf.zeros_like(signed_grad)
-            else:
-                mulitplier = tf.where(tf.equal(signed_grad, prev_grad),
-                                      FLAGS.rprop_increment * tf.ones_like(signed_grad),
-                                      FLAGS.rprop_decrement * tf.ones_like(signed_grad))
-                update_coefficients *= mulitplier
+            mulitplier = tf.cond(
+                tf.equal(iter_num, 0),
+                lambda: tf.ones_like(signed_grad),
+                lambda: tf.where(tf.equal(signed_grad, prev_grad),
+                                 FLAGS.rprop_increment * tf.ones_like(signed_grad),
+                                 FLAGS.rprop_decrement * tf.ones_like(signed_grad))
+                )
+            update_coefficients *= mulitplier
             scaled_signed_grad = alpha * signed_grad * update_coefficients
             # Note we subtract the gradient here
             x_next = tf.stop_gradient(x - scaled_signed_grad)
@@ -323,7 +322,9 @@ def main(_):
             return x_next, update_coefficients, signed_grad
 
         # We definitely update here
-        x_adv, update_coefficients, prev_grad = update_x(x_input, avg_logits)
+        update_coefficients = tf.ones_like(x_input)
+        prev_grad = tf.zeros_like(x_input)
+        x_adv, update_coefficients, prev_grad = update_x(x_input, avg_logits, update_coefficients, prev_grad)
 
         def test_accuracy(stack_of_logits):
             predicted_label = tf.argmax(stack_of_logits, axis=-1, output_type=tf.int32)
@@ -361,7 +362,7 @@ def main(_):
             # Maybe update x_adv
             x_adv, update_coefficients, prev_grad = tf.cond(
                 should_run_update,
-                lambda: update_x(x_adv, logits, iter_count, update_coefficients, prev_grad),
+                lambda: update_x(x_adv, logits, update_coefficients, prev_grad, iter_count),
                 lambda: x_adv, update_coefficients, prev_grad)
 
             prev_logits_stack = logits_stack
