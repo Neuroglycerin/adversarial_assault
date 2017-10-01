@@ -100,7 +100,7 @@ def augment_single_pre_resize(image, source_space='rgb'):
     image = augment_single_post_resize(image)
 
     # Crop
-    image = image_utils.random_crop(image)
+    #image = image_utils.random_crop(image)
 
     # Parameters
     brightness_max_delta = 0.06 * 2
