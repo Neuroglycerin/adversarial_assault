@@ -305,9 +305,9 @@ def main(_):
 
         def test_accuracy(stack_of_logits):
             predicted_label = tf.argmax(stack_of_logits, axis=-1, output_type=tf.int32)
-            label_is_right = tf.equal(top_label_index, target_class_input)
-            any_label_is_right = tf.reduce_any(label_is_right, axis=0)
-            return any_label_is_right
+            label_is_bad = tf.not_equal(target_class_input, predicted_label)
+            any_label_is_bad = tf.reduce_any(label_is_bad, axis=0)
+            return any_label_is_bad
 
 
         #iter_limit = FLAGS.max_iter
@@ -331,9 +331,9 @@ def main(_):
 
             # Check whether the current prediction is accurate
             have_time_for_one_more = tf.less(iter_count, iter_limit)
-            label_is_right = test_accuracy(logits_stack)
+            label_is_bad = test_accuracy(logits_stack)
             should_run_update = tf.logical_and(have_time_for_one_more,
-                                               label_is_right)
+                                               label_is_bad)
 
             # Maybe update x_adv
             logits = tf.reduce_sum(logits_stack, axis=0, keep_dims=True)
